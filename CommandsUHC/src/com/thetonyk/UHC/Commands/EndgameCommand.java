@@ -183,7 +183,7 @@ public class EndgameCommand implements CommandExecutor {
 		
 		if (players.size() < 1) {
 			
-			sender.sendMessage(Main.PREFIX + "There are no teams/players alives.");
+			sender.sendMessage(Main.PREFIX + "There are no teams/players alive.");
 			return true;
 			
 		}
