@@ -158,7 +158,7 @@ public class SpecPlayer implements Listener {
 		
 		if (alives.isEmpty()) {
 			
-			event.getPlayer().sendMessage(Main.PREFIX + "There are no players alives.");
+			event.getPlayer().sendMessage(Main.PREFIX + "There are no players alive.");
 			return;
 			
 		}
