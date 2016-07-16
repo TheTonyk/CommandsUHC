@@ -20,6 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thetonyk.UHC.Main;
+import com.thetonyk.UHC.Features.DisplayNametags;
 
 public class PlayerUtils {
 	
@@ -112,6 +113,8 @@ public class PlayerUtils {
 				PermissionsUtils.clearPermissions(Bukkit.getPlayer(player));
 				PermissionsUtils.setPermissions(Bukkit.getPlayer(player));
 				PermissionsUtils.updateBungeePermissions(Bukkit.getPlayer(player));
+				
+				DisplayNametags.updateNametag(Bukkit.getPlayer(player), GameUtils.getIDs());
 				
 			}
 			

@@ -88,6 +88,7 @@ public class WorldInventory implements Listener {
 			if (this.lastName.length() < 3) lore.add("§8⫸ §7This name was too short.");
 			if (WorldUtils.exist(this.lastName) || this.lastName.equalsIgnoreCase("lobby")) lore.add("§8⫸ §7This name is already used.");
 			if (this.lastName.endsWith("_nether") || this.lastName.endsWith("_end")) lore.add("§8⫸ §7You can't create Nether or End by yourself.");
+			if (this.lastName.contains(" ")) lore.add("§8⫸ §7You can't use spaces in the name.");
 			lore.add(" ");
 			
 		}
@@ -256,7 +257,7 @@ public class WorldInventory implements Listener {
 						
 					}
 					
-					if (text.length() < 3 || WorldUtils.exist(text) || text.equalsIgnoreCase("lobby") || text.endsWith("_nether") || text.endsWith("_end")) {
+					if (text.length() < 3 || WorldUtils.exist(text) || text.equalsIgnoreCase("lobby") || text.endsWith("_nether") || text.endsWith("_end") || text.contains(" ")) {
 						
 						name = null;
 						lastName = text;

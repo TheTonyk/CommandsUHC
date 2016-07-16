@@ -125,7 +125,7 @@ public class SpecPlayer implements Listener {
 		
 	}
 	
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onChat(AsyncPlayerChatEvent event) {
 		
 		Player player = event.getPlayer();

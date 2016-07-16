@@ -16,6 +16,7 @@ import com.thetonyk.UHC.Main;
 import com.thetonyk.UHC.Packets.PacketHandler;
 import com.thetonyk.UHC.Utils.ItemsUtils;
 
+import io.netty.channel.Channel;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.ChatMessage;
 import net.minecraft.server.v1_8_R3.ContainerAnvil;
@@ -50,7 +51,7 @@ public class AnvilGUI {
 		this.entityPlayer.activeContainer.windowId = c;
 		this.entityPlayer.activeContainer.addSlotListener(this.entityPlayer);
 		
-		listener = new Listener() {
+		this.listener = new Listener() {
 			
 			@EventHandler
 			public void onClick(InventoryClickEvent event) {
@@ -104,20 +105,20 @@ public class AnvilGUI {
 			
 		};
 		
-		Bukkit.getPluginManager().registerEvents(listener, Main.uhc);
+		Bukkit.getPluginManager().registerEvents(this.listener, Main.uhc);
 		
-		packetsListener = new PacketHandler() {
+		this.packetsListener = new PacketHandler(Main.uhc) {
 			
 			@Override
-			public Object onPacketIn(Player player, Object packet) {
+			public Object onPacketInAsync(Player player, Channel channel, Object packet) {
 				
-				if (!(packet instanceof PacketPlayInCustomPayload)) return super.onPacketIn(player, packet);
+				if (!(packet instanceof PacketPlayInCustomPayload)) return super.onPacketInAsync(player, channel, packet);
 				
-				if (((CraftPlayer) player).getHandle().activeContainer != container) return super.onPacketIn(player, packet);
+				if (((CraftPlayer) player).getHandle().activeContainer != container) return super.onPacketInAsync(player, channel, packet);
 				
 				((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutWindowData(container.windowId, 0, 0));
 				
-				return super.onPacketIn(player, packet);
+				return super.onPacketInAsync(player, channel, packet);
 				
 			}
 			
@@ -127,8 +128,8 @@ public class AnvilGUI {
 		
 	private void delete() {
 		
-		HandlerList.unregisterAll(listener);
-		packetsListener.delete();
+		HandlerList.unregisterAll(this.listener);
+		this.packetsListener.close();
 		
 	}
 	

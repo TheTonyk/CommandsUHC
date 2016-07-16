@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.thetonyk.UHC.Main;
 import com.thetonyk.UHC.Packets.PacketHandler;
 
+import io.netty.channel.Channel;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.Blocks;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
@@ -60,14 +61,14 @@ public class SignGUI {
 		
 		this.entityPlayer.playerConnection.sendPacket(nmsPacket);
 		
-		packetsListener = new PacketHandler() {
+		this.packetsListener = new PacketHandler(Main.uhc) {
 			
 			@Override
-			public Object onPacketIn(Player player, Object packet) {
+			public Object onPacketInAsync(Player player, Channel channel, Object packet) {
 				
-				if (!(packet instanceof PacketPlayInUpdateSign)) return super.onPacketIn(player, packet);
+				if (!(packet instanceof PacketPlayInUpdateSign)) return super.onPacketInAsync(player, channel, packet);
 				
-				if (!player.getUniqueId().equals(entityPlayer.getUniqueID())) return super.onPacketIn(player, packet);
+				if (!player.getUniqueId().equals(entityPlayer.getUniqueID())) return super.onPacketInAsync(player, channel, packet);
 				
 				PacketPlayInUpdateSign nmsPacket = (PacketPlayInUpdateSign) packet;
 				
@@ -84,13 +85,13 @@ public class SignGUI {
 				callback.onConfirm(rawLines);
 				delete();
 				
-				return super.onPacketIn(player, packet);
+				return super.onPacketInAsync(player, channel, packet);
 				
 			}
 				
 		};
 		
-		listener = new Listener() {
+		this.listener = new Listener() {
 			
 			@EventHandler
 			public void onQuit(PlayerQuitEvent event) {
@@ -102,14 +103,14 @@ public class SignGUI {
 			
 		};
 		
-		Bukkit.getPluginManager().registerEvents(listener, Main.uhc);
+		Bukkit.getPluginManager().registerEvents(this.listener, Main.uhc);
 		
 	}
 	
 	public void delete() {
 		
-		packetsListener.delete();
-		HandlerList.unregisterAll(listener);
+		this.packetsListener.close();;
+		HandlerList.unregisterAll(this.listener);
 		
 	}
 	

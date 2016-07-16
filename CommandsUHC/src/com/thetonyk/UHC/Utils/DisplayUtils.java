@@ -8,8 +8,10 @@ import org.bukkit.craftbukkit.v1_8_R3.util.CraftIconCache;
 import org.bukkit.entity.Player;
 
 import com.mojang.authlib.GameProfile;
+import com.thetonyk.UHC.Main;
 import com.thetonyk.UHC.Packets.PacketHandler;
 
+import io.netty.channel.Channel;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
@@ -34,12 +36,12 @@ public class DisplayUtils {
 	
 	public static void redditHearts() {
 		
-		new PacketHandler() {
+		new PacketHandler(Main.uhc) {
 			
 			@Override
-			public Object onPacketOut(Player player, Object packet) {
+			public Object onPacketOutAsync(Player player, Channel channel, Object packet) {
 				
-				if (!(packet instanceof PacketPlayOutLogin)) return super.onPacketOut(player, packet);
+				if (!(packet instanceof PacketPlayOutLogin)) return super.onPacketOutAsync(player, channel, packet);
 				
 				PacketPlayOutLogin nmsPacket = (PacketPlayOutLogin) packet;
 				
@@ -56,7 +58,7 @@ public class DisplayUtils {
 				
 				}
 				
-				return super.onPacketOut(player, nmsPacket);
+				return super.onPacketOutAsync(player, channel, nmsPacket);
 				
 			}
 			
@@ -69,12 +71,12 @@ public class DisplayUtils {
 		int players = GameUtils.getPlayersCount();
 		int max = GameUtils.getSlots();
 		
-		new PacketHandler() {
+		new PacketHandler(Main.uhc) {
 			
 			@Override
-			public Object onPacketOut(Player player, Object packet) {
+			public Object onPacketOutAsync(Player player, Channel channel, Object packet) {
 				
-				if (!(packet instanceof PacketStatusOutServerInfo)) return super.onPacketOut(player, packet);
+				if (!(packet instanceof PacketStatusOutServerInfo)) return super.onPacketOutAsync(player, channel, packet);
 				
 				PacketStatusOutServerInfo nmsPacket = (PacketStatusOutServerInfo) packet;
 				ServerPing oldPing = null;
@@ -101,7 +103,7 @@ public class DisplayUtils {
 				ping.setPlayerSample(counter);
 				ping.setServerInfo(new ServerData(oldPing.c().a(), oldPing.c().b()));
 				
-				return super.onPacketOut(player, new PacketStatusOutServerInfo(ping));
+				return super.onPacketOutAsync(player, channel, new PacketStatusOutServerInfo(ping));
 				
 			}
 			

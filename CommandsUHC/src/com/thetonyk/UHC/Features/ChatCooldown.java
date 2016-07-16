@@ -16,7 +16,7 @@ public class ChatCooldown implements Listener {
 
 	List<UUID> cooldown = new ArrayList<UUID>();
 	
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onChat (AsyncPlayerChatEvent event) {
 		
 		UUID uuid = event.getPlayer().getUniqueId();
