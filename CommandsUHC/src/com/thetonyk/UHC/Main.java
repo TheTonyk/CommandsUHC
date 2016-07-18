@@ -19,6 +19,7 @@ import com.thetonyk.UHC.Commands.GiveCommand;
 import com.thetonyk.UHC.Commands.HealCommand;
 import com.thetonyk.UHC.Commands.HealthCommand;
 import com.thetonyk.UHC.Commands.HelpopCommand;
+import com.thetonyk.UHC.Commands.HostCommand;
 import com.thetonyk.UHC.Commands.InviteCommand;
 import com.thetonyk.UHC.Commands.LagCommand;
 import com.thetonyk.UHC.Commands.ListCommand;
@@ -156,6 +157,7 @@ public class Main extends JavaPlugin {
 		this.getCommand("text").setExecutor(new TextCommand());
 		this.getCommand("respawn").setExecutor(new RespawnCommand());
 		this.getCommand("dq").setExecutor(new DQCommand());
+		this.getCommand("host").setExecutor(new HostCommand());
 		
 		PluginManager manager = Bukkit.getPluginManager();
 		

@@ -94,3 +94,5 @@ commands:
         usage: /respawn
     dq:
         usage: /dq
+    host:
+        usage: /host

@@ -3,9 +3,7 @@ package com.thetonyk.UHC.Features.Options;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -22,7 +20,7 @@ public class OptionFeature {
 	
 	public static void setup() {
 		
-		Set<Class<?>> classes = null;
+		List<Class<?>> classes = null;
 			 
 		try {
 			
@@ -37,14 +35,14 @@ public class OptionFeature {
 		 
 		Bukkit.broadcastMessage(String.valueOf(classes.size()));
 		 
-		for (Class<? extends Object> option : classes) {
+		for (Class<? extends Object> file : classes) {
 			
-			Bukkit.broadcastMessage(option.getName());
+			Bukkit.broadcastMessage(file.getName());
 			Object instance = null;
 			
 			try {
 			
-				instance = option.newInstance();
+				instance = file.newInstance();
 			
 			} catch (InstantiationException | IllegalAccessException exception) {
 				
@@ -60,7 +58,12 @@ public class OptionFeature {
 			
 			if (instance instanceof Option) {
 				
-				options.add((Option) instance);
+				Option option = (Option) instance;
+				
+				options.add(option);
+				
+				if (option.isEnabled()) option.onEnable();
+				else option.onDisable();
 				
 			}
 			 
@@ -68,9 +71,15 @@ public class OptionFeature {
 		
 	}
 	
-	private static Set<Class<?>> getClasses(String packageName) throws IOException, ClassNotFoundException {
+	public static List<Option> getFeatures() {
 		
-		Set<Class<?>> classes = new HashSet<Class<?>>();
+		return options;
+		
+	}
+	
+	private static List<Class<?>> getClasses(String packageName) throws IOException, ClassNotFoundException {
+		
+		List<Class<?>> classes = new ArrayList<Class<?>>();
 		JarFile jar = new JarFile(Main.uhc.getJarFile());
 		Enumeration<JarEntry> entries = jar.entries();
 		
