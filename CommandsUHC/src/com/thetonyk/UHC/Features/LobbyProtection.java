@@ -1,5 +1,6 @@
 package com.thetonyk.UHC.Features;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,8 +31,31 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import com.thetonyk.UHC.Main;
 
 public class LobbyProtection implements Listener {
+	
+	public LobbyProtection() {
+		
+		new BukkitRunnable() {
+			
+			public void run() {
+				
+				for (Player player : Bukkit.getWorld("lobby").getPlayers()) {
+					
+					if (player.getFireTicks() < 1) continue;
+					
+					player.setFireTicks(0);
+					
+				}
+				
+			}
+			
+		}.runTaskTimer(Main.uhc, 20, 20);
+		
+	}
 
 	@EventHandler
 	public void onWeatherChange(WeatherChangeEvent event) {

@@ -221,7 +221,7 @@ public class LobbyItems implements Listener {
 		
 	}
 	
-	private void giveItems (Player player) {
+	public static void giveItems (Player player) {
 		
 		ArrayList<String> lore = new ArrayList<String>();
 		lore.add("§7Click to see the rules.");
