@@ -46,7 +46,12 @@
     <repository>
       <id>spring-milestones</id>
       <url>http://repo.spring.io/libs-milestone/</url>
-  </repository>
+  	</repository>
+  	<repository>
+		<id>twitter4j.org</id>
+		<name>twitter4j.org Repository</name>
+		<url>http://twitter4j.org/maven2</url>
+      </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -89,6 +94,16 @@
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
       <version>20160212</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.twitter4j</groupId>
+    	<artifactId>twitter4j-core</artifactId>
+    	<version>4.0.4</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.twitter4j</groupId>
+    	<artifactId>twitter4j-async</artifactId>
+    	<version>4.0.4</version>
     </dependency>
   </dependencies>
 </project>

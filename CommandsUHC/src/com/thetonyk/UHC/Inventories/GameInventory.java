@@ -1,5 +1,6 @@
 package com.thetonyk.UHC.Inventories;
 
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,6 +36,9 @@ import com.thetonyk.UHC.Utils.ItemsUtils;
 import com.thetonyk.UHC.Utils.MatchesUtils;
 import com.thetonyk.UHC.Utils.MatchesUtils.Match;
 import com.thetonyk.UHC.Utils.MatchesUtils.MatchesCallback;
+
+import net.dean.jraw.ApiException;
+import twitter4j.TwitterException;
 
 public class GameInventory implements Listener {
 	
@@ -266,15 +270,12 @@ public class GameInventory implements Listener {
 				}
 				
 				break;
-			case SCHEDULE:
-				
-				break;
 			
 		}
 		
 		
 		ItemStack cancel = ItemsUtils.createItem(Material.STAINED_CLAY, "§8⫸ §c" + (this.page.ordinal() < 1 ? "Cancel" : "Back"), 1, 14);
-		ItemStack valid = ItemsUtils.createItem(Material.STAINED_CLAY, "§8⫸ §aNext", 1, 5);
+		ItemStack valid = ItemsUtils.createItem(Material.STAINED_CLAY, "§8⫸ §a" + (this.page.next().ordinal() <= this.page.ordinal() ? "Confirm" : "Next"), 1, 5);
 		
 		this.inventory.setItem(this.inventory.getSize() - 9, cancel);
 		if (this.page.main() == null) this.inventory.setItem(this.inventory.getSize() - 1, valid);
@@ -475,7 +476,7 @@ public class GameInventory implements Listener {
 								}
 		
 								@Override
-								public void onFailure() {}
+								public void onFailure(Throwable exception) {}
 								
 							});
 							
@@ -558,9 +559,7 @@ public class GameInventory implements Listener {
 				}
 				
 				break;
-			case SCHEDULE:
-				
-				break;
+
 		}
 		
 		if (item.getItemMeta().getDisplayName().equals("§8⫸ §cBack")) {
@@ -582,6 +581,96 @@ public class GameInventory implements Listener {
 		if (item.getItemMeta().getDisplayName().equals("§8⫸ §aNext")) {
 			
 			changePage(this.page.next());
+			return;
+			
+		}
+		
+		if (item.getItemMeta().getDisplayName().equals("§8⫸ §aConfirm")) {
+			
+			player.closeInventory();
+			
+			if (this.game == GameType.REDDIT || this.game == GameType.TWITTER) {
+			
+				MatchesUtils.postTweet(Main.uhc.getConfig().getString("TwitterConsumerKey"), Main.uhc.getConfig().getString("TwitterConsumerSecret"), Main.uhc.getConfig().getString("TwitterAccessToken"), Main.uhc.getConfig().getString("TwitterAccessSecret"), "Test", new MatchesCallback<URL>() {
+	
+					@Override
+					public void onSuccess(URL url) {
+						
+						Bukkit.broadcastMessage(Main.PREFIX + "This UHC was succesfully tweeted.");
+						Bukkit.broadcastMessage("§7" + url.toString());
+						
+						if (game == GameType.TWITTER) {
+							
+							cancel();
+							return;
+							
+						}
+						
+						new MatchesUtils.Submit(player, "Test Title", "Test Test Test", "ultrahardcore", new MatchesCallback<URL>() {
+							
+							@Override
+							public void onSuccess(URL url) {
+								
+								cancel();
+								Bukkit.broadcastMessage(Main.PREFIX + "This UHC was succesfully posted!");
+								Bukkit.broadcastMessage("Reddit link: " + url.toString());
+								
+							}
+
+							@Override
+							public void onFailure(Throwable exception) {
+								
+								player.openInventory(inventory);
+								
+								if (exception == null) return;
+								
+								if (exception instanceof ApiException) {
+									
+									ApiException error = (ApiException) exception;
+									
+									player.sendMessage(Main.PREFIX + "An error from Reddit has occurred.");
+									player.sendMessage(Main.PREFIX + error.getExplanation());
+									return;
+									
+								}
+								
+								exception.printStackTrace();
+								player.sendMessage(Main.PREFIX + "An error has occurred.");
+								player.sendMessage(Main.PREFIX + exception.getMessage());
+								
+							}
+							
+						});
+						
+					}
+	
+					@Override
+					public void onFailure(Throwable exception) {
+						
+						player.openInventory(inventory);
+						
+						if (exception == null) return;
+						
+						if (exception instanceof TwitterException) {
+							
+							TwitterException error = (TwitterException) exception;
+							
+							player.sendMessage(Main.PREFIX + "An error from Twitter has occured. (Code: " + error.getStatusCode() + ")");
+							player.sendMessage(Main.PREFIX + error.getErrorMessage());
+							return;
+							
+						}
+						
+						exception.printStackTrace();
+						player.sendMessage(Main.PREFIX + "An error has occurred.");
+						player.sendMessage(Main.PREFIX + exception.getMessage());
+						
+					}
+					
+				});
+			
+			}
+			
 			return;
 			
 		}
@@ -671,7 +760,7 @@ public class GameInventory implements Listener {
 	
 	private enum Page {
 		
-		BASIC("Config", 27, null), TEAMS("Teams", 54, Page.BASIC), SCHEDULE("Schedule", 27, null);
+		BASIC("Config", 27, null), TEAMS("Teams", 54, Page.BASIC);
 		
 		private static Page[] values = values();
 		private String name;
