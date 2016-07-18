@@ -8,7 +8,9 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.thetonyk.UHC.Main;
+import com.thetonyk.UHC.Commands.HostCommand;
 import com.thetonyk.UHC.Features.SpecInfo;
 import com.thetonyk.UHC.GUI.NumberGUI;
 import com.thetonyk.UHC.GUI.NumberGUI.NumberCallback;
@@ -300,6 +303,14 @@ public class GameInventory implements Listener {
 		for (HumanEntity viewer : new ArrayList<HumanEntity>(inventory.getViewers())) {
 			
 			viewer.closeInventory();
+			
+		}
+		
+		for (Map.Entry<UUID, GameInventory> entry : HostCommand.inventories.entrySet()) {
+			
+			if (!entry.getValue().equals(this)) continue;
+			
+			HostCommand.inventories.remove(entry.getKey(), this);
 			
 		}
 		

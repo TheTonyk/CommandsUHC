@@ -33,11 +33,8 @@ public class OptionFeature {
 			
 		}
 		 
-		Bukkit.broadcastMessage(String.valueOf(classes.size()));
-		 
 		for (Class<? extends Object> file : classes) {
 			
-			Bukkit.broadcastMessage(file.getName());
 			Object instance = null;
 			
 			try {

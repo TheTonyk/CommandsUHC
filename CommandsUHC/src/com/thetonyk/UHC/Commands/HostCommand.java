@@ -15,7 +15,7 @@ import com.thetonyk.UHC.Inventories.GameInventory;
 
 public class HostCommand implements CommandExecutor {
 	
-	private static Map<UUID, GameInventory> inventories = new HashMap<UUID, GameInventory>();
+	public static Map<UUID, GameInventory> inventories = new HashMap<UUID, GameInventory>();
 	
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		
