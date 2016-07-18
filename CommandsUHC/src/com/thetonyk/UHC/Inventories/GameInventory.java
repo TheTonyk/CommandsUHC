@@ -54,6 +54,8 @@ public class GameInventory implements Listener {
 	private int pvp;
 	private int meetup;
 	private GameType game;
+	private URL twitter;
+	private URL reddit;
 	
 	public GameInventory() {
 		
@@ -69,6 +71,8 @@ public class GameInventory implements Listener {
 		this.pvp = 20;
 		this.meetup = 60;
 		this.game = GameType.REDDIT;
+		this.twitter = null;
+		this.reddit = null;
 		
 		update();
 		
@@ -596,12 +600,13 @@ public class GameInventory implements Listener {
 					@Override
 					public void onSuccess(URL url) {
 						
-						Bukkit.broadcastMessage(Main.PREFIX + "This UHC was succesfully tweeted.");
-						Bukkit.broadcastMessage("§7" + url.toString());
+						twitter = url;
 						
 						if (game == GameType.TWITTER) {
 							
 							cancel();
+							Bukkit.broadcastMessage(Main.PREFIX + "The UHC has been schedule for the " + format.format(time) + ".");
+							Bukkit.broadcastMessage(Main.PREFIX + twitter.toString());
 							return;
 							
 						}
@@ -611,9 +616,11 @@ public class GameInventory implements Listener {
 							@Override
 							public void onSuccess(URL url) {
 								
+								reddit = url;
 								cancel();
-								Bukkit.broadcastMessage(Main.PREFIX + "This UHC was succesfully posted!");
-								Bukkit.broadcastMessage("Reddit link: " + url.toString());
+								Bukkit.broadcastMessage(Main.PREFIX + "The UHC has been schedule for the " + format.format(time) + ".");
+								Bukkit.broadcastMessage(Main.PREFIX + twitter.toString());
+								Bukkit.broadcastMessage(Main.PREFIX + reddit.toString());
 								
 							}
 
@@ -635,7 +642,7 @@ public class GameInventory implements Listener {
 								}
 								
 								exception.printStackTrace();
-								player.sendMessage(Main.PREFIX + "An error has occurred.");
+								player.sendMessage(Main.PREFIX + "An error has occurred while posting on Reddit.");
 								player.sendMessage(Main.PREFIX + exception.getMessage());
 								
 							}
@@ -662,7 +669,7 @@ public class GameInventory implements Listener {
 						}
 						
 						exception.printStackTrace();
-						player.sendMessage(Main.PREFIX + "An error has occurred.");
+						player.sendMessage(Main.PREFIX + "An error has occurred while tweeting.");
 						player.sendMessage(Main.PREFIX + exception.getMessage());
 						
 					}
