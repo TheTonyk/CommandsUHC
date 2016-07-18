@@ -18,79 +18,40 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.thetonyk.UHC.Main;
+import com.thetonyk.UHC.Features.Options.OptionFeature.Option;
 import com.thetonyk.UHC.Utils.GameUtils;
 import com.thetonyk.UHC.Utils.ItemsUtils;
 import com.thetonyk.UHC.Utils.GameUtils.Status;
 
-public class GoldenHeadOption implements Listener {
+public class GoldenHeadOption extends Option implements Listener {
 	
-	private static Boolean state = false;
-	public static String name;
-	private static ItemStack icon;
-	private static int regen;
+	private int regen;
 	private static BlockFace[] sortedFaces = {BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST};
 	
 	public GoldenHeadOption() {
 		
-		name = "Nether";
-		icon = new ItemStack(Material.SKULL, 1, (short) 3);
+		super("Golden Head", new ItemStack(Material.GOLDEN_APPLE), true);
 		
 		Bukkit.addRecipe(new ShapedRecipe(ItemsUtils.createItem(Material.GOLDEN_APPLE, "§6Golden Head", 1, 0)).shape("AAA", "ABA", "AAA").setIngredient('A', Material.GOLD_INGOT).setIngredient('B', new ItemStack(Material.SKULL_ITEM, 1, (short) 3).getData()));
 		
-		regen = 8;
-		
-		state = true;
+		this.regen = 8;
 		
 	}
 	
-	public static void enable() {
+	public int getRegen() {
 		
-		if (state) return;
-		
-		state = true;
+		return this.regen;
 		
 	}
 	
-	public static void disable() {
+	public void setRegen(int amount) {
 		
-		if (!state) return;
-		
-		state = false;
-		
-	}
-	
-	public static Boolean enabled() {
-		
-		return state;
-		
-	}
-	
-	public static ItemStack getIcon() {
-		
-		ItemStack item = icon.clone();
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName("§8⫸ §6" + name + " §8⫷");
-		item.setItemMeta(meta);
-		
-		return item;
-		
-	}
-	
-	public static int getRegen() {
-		
-		return regen;
-		
-	}
-	
-	public static void setRegen(int amount) {
-		
-		regen = amount;
+		this.regen = amount;
 		
 	}
 	
@@ -102,7 +63,7 @@ public class GoldenHeadOption implements Listener {
 		Location location = player.getLocation();
 		Status status = GameUtils.getStatus();
 		
-		if (!enabled()) return;
+		if (!isEnabled()) return;
 		
 		if (status != Status.PLAY || GameUtils.getDeath(uuid) || GameUtils.getSpectate(uuid)) return;
 		
@@ -140,7 +101,7 @@ public class GoldenHeadOption implements Listener {
 		Player player = event.getPlayer();
 		ItemStack item = event.getItem();
 		
-		if (!enabled()) return;
+		if (!isEnabled()) return;
 		
 		if (item.getType() != Material.GOLDEN_APPLE || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName() || !item.getItemMeta().getDisplayName().equalsIgnoreCase("§6Golden Head")) return;
 		
@@ -153,13 +114,11 @@ public class GoldenHeadOption implements Listener {
 		
 		Recipe recipe = event.getRecipe();
 		CraftingInventory inventory = event.getInventory();
-		ItemStack skull = inventory.getMatrix()[4];
+		ItemStack item = recipe.getResult();
 		
-		if (skull == null || skull.getType() != Material.SKULL_ITEM) return;
+		if (item.getType() != Material.GOLDEN_APPLE || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName() || !item.getItemMeta().getDisplayName().equalsIgnoreCase("§6Golden Head")) return;
 		
-		if (recipe.getResult().getType() != Material.GOLDEN_APPLE) return;
-		
-		if (enabled()) return;
+		if (isEnabled()) return;
 			
 		inventory.setResult(new ItemStack(Material.AIR));
 		

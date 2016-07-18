@@ -12,55 +12,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
+import com.thetonyk.UHC.Features.Options.OptionFeature.Option;
 import com.thetonyk.UHC.Utils.GameUtils;
 
-public class EndOption implements Listener {
-	
-	private static Boolean state = false;
-	public static String name;
-	private static ItemStack icon;
+public class EndOption extends Option implements Listener {
 	
 	public EndOption() {
 		
-		name = "The End";
-		icon = new ItemStack(Material.ENDER_STONE);
-		
-		state = true;
-		
-	}
-	
-	public static void enable() {
-		
-		if (state) return;
-			
-		state = true;
-		
-	}
-	
-	public static void disable() {
-		
-		if (!state) return;
-		
-		state = false;
-		
-	}
-	
-	public static Boolean enabled() {
-		
-		return state;
-		
-	}
-	
-	public static ItemStack getIcon() {
-		
-		ItemStack item = icon.clone();
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName("§8⫸ §6" + name + " §8⫷");
-		item.setItemMeta(meta);
-		
-		return item;
+		super("The End", new ItemStack(Material.ENDER_STONE), false);
 		
 	}
 	
@@ -71,7 +31,7 @@ public class EndOption implements Listener {
 		World from = fromLocation.getWorld();
 		TravelAgent agent = event.getPortalTravelAgent();
 		
-		if (!enabled()) {
+		if (!isEnabled()) {
 			
 			event.setCancelled(true);
 			return;
@@ -113,7 +73,7 @@ public class EndOption implements Listener {
 		World from = fromLocation.getWorld();
 		TravelAgent agent = event.getPortalTravelAgent();
 		
-		if (!enabled()) {
+		if (!isEnabled()) {
 			
 			event.setCancelled(true);
 			return;

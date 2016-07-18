@@ -12,53 +12,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-public class NetherOption implements Listener {
-	
-	private static Boolean state = false;
-	public static String name;
-	private static ItemStack icon;
+import com.thetonyk.UHC.Features.Options.OptionFeature.Option;
+
+public class NetherOption extends Option implements Listener {
 	
 	public NetherOption() {
 		
-		name = "Nether";
-		icon = new ItemStack(Material.NETHERRACK);
-		
-		state = true;
-		
-	}
-	
-	public static void enable() {
-		
-		if (state) return;
-		
-		state = true;
-		
-	}
-	
-	public static void disable() {
-		
-		if (!state) return;
-		
-		state = false;
-		
-	}
-	
-	public static Boolean enabled() {
-		
-		return state;
-		
-	}
-	
-	public static ItemStack getIcon() {
-		
-		ItemStack item = icon.clone();
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName("§8⫸ §6" + name + " §8⫷");
-		item.setItemMeta(meta);
-		
-		return item;
+		super("Nether", new ItemStack(Material.NETHERRACK), true);
 		
 	}
 	
@@ -69,7 +30,7 @@ public class NetherOption implements Listener {
 		World from = fromLocation.getWorld();
 		TravelAgent agent = event.getPortalTravelAgent();
 		
-		if (!enabled()) {
+		if (!isEnabled()) {
 			
 			event.setCancelled(true);
 			return;
@@ -104,7 +65,7 @@ public class NetherOption implements Listener {
 		World from = fromLocation.getWorld();
 		TravelAgent agent = event.getPortalTravelAgent();
 		
-		if (!enabled()) {
+		if (!isEnabled()) {
 			
 			event.setCancelled(true);
 			return;

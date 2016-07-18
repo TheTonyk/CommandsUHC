@@ -3,6 +3,7 @@ package com.thetonyk.UHC;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.thetonyk.UHC.Main;
 import com.thetonyk.UHC.Commands.AcceptCommand;
@@ -65,9 +66,7 @@ import com.thetonyk.UHC.Features.PregenStates;
 import com.thetonyk.UHC.Features.SpecInfo;
 import com.thetonyk.UHC.Features.SpecPlayer;
 import com.thetonyk.UHC.Features.TeleportProtection;
-import com.thetonyk.UHC.Features.Options.EndOption;
-import com.thetonyk.UHC.Features.Options.GoldenHeadOption;
-import com.thetonyk.UHC.Features.Options.NetherOption;
+import com.thetonyk.UHC.Features.Options.OptionFeature;
 import com.thetonyk.UHC.Features.TeamsInvitations;
 import com.thetonyk.UHC.Features.DisplayNametags;
 import com.thetonyk.UHC.Features.DisplayServerList;
@@ -75,7 +74,6 @@ import com.thetonyk.UHC.Features.DisplaySidebar;
 import com.thetonyk.UHC.Features.DisplayTab;
 import com.thetonyk.UHC.Features.DisplayTimers;
 import com.thetonyk.UHC.Features.HealthFood;
-import com.thetonyk.UHC.Inventories.ConfigInventory;
 import com.thetonyk.UHC.Inventories.InviteInventory;
 import com.thetonyk.UHC.Inventories.PlayerInventory;
 import com.thetonyk.UHC.Inventories.RulesInventory;
@@ -88,6 +86,8 @@ import com.thetonyk.UHC.Utils.WorldUtils;
 
 import static net.md_5.bungee.api.ChatColor.*;
 
+import java.io.File;
+
 import net.md_5.bungee.api.chat.ComponentBuilder;
 
 public class Main extends JavaPlugin {
@@ -96,7 +96,6 @@ public class Main extends JavaPlugin {
 	
 	public static final String NO_PERMS = "§fUnknown command.";
 	public static final String PREFIX = "§a§lUHC §8⫸ §7";
-	public static int channelId = 0;
 	
 	@Override
 	public void onEnable() {
@@ -193,16 +192,31 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new TeleportProtection(), this);
 		manager.registerEvents(new TeamsInvitations(), this);
 		
-		manager.registerEvents(new EndOption(), this);
-		manager.registerEvents(new GoldenHeadOption(), this);
-		manager.registerEvents(new NetherOption(), this);
-		
 		manager.registerEvents(new InviteInventory(), this);
-		manager.registerEvents(new ConfigInventory(), this);
 		manager.registerEvents(new PlayerInventory(), this);
 		manager.registerEvents(new RulesInventory(), this);
 		manager.registerEvents(new SelectorInventory(), this);
 		manager.registerEvents(new TeamsInventory(), this);
+		
+		try {
+        	
+            Class.forName("com.thetonyk.UHC.Packets.PacketHandler");
+            
+        } catch (Exception exception) {
+        	
+            Main.uhc.getLogger().severe("[Main] Unable to load the packet hanlder.");
+            
+        }
+		
+		new BukkitRunnable() {
+			
+			public void run() {
+				
+				OptionFeature.setup();
+				
+			}
+			
+		}.runTaskLater(Main.uhc, 20);
 		
 	}
 	
@@ -220,6 +234,12 @@ public class Main extends JavaPlugin {
 	public static ComponentBuilder getPrefixComponent() {
 		
 		return new ComponentBuilder("UHC ").color(GREEN).bold(true).append("⫸ ").color(DARK_GRAY).bold(false);
+		
+	}
+	
+	public File getJarFile() {
+		
+		return this.getFile();
 		
 	}
 	
