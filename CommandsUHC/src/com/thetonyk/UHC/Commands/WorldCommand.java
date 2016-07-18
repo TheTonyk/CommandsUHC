@@ -17,7 +17,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.thetonyk.UHC.Main;
-import com.thetonyk.UHC.Inventories.ConfigInventory;
 import com.thetonyk.UHC.Utils.DatabaseUtils;
 import com.thetonyk.UHC.Utils.GameUtils;
 import com.thetonyk.UHC.Utils.GameUtils.Status;
@@ -405,13 +404,6 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 			sender.sendMessage(Main.PREFIX + "New slots: §a" + slot + "§7.");
 			return true;
 			            
-		}
-		
-		if (args[0].equalsIgnoreCase("config")) {
-			
-			Bukkit.getPlayer(sender.getName()).openInventory(ConfigInventory.getInventory());
-			return true;
-			
 		}
 		
 		sender.sendMessage(Main.PREFIX + "Usage of /world:");
