@@ -56,7 +56,7 @@ public class HostCommand implements CommandExecutor {
 					
 				}
 				
-			}.runTaskLater(Main.uhc, 30);
+			}.runTaskLater(Main.uhc, 600);
 			
 			HostCommand.check.put(player.getUniqueId(), timer);
 			sender.sendMessage(Main.PREFIX + "Are you sure? It will reset all the game and players will loose everything.");

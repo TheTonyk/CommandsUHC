@@ -962,9 +962,14 @@ public class GameUtils {
 	
 	public static void resetGame() {
 		
+		if (GameUtils.getWorld() != null) {
+			
+			Bukkit.getWorld(GameUtils.getWorld()).getWorldBorder().setSize(WorldUtils.getSize(GameUtils.getWorld()));
+			Bukkit.getWorld(GameUtils.getWorld()).setPVP(false);
+			
+		}
+		
 		GameUtils.setStatus(Status.NONE);		
-		Bukkit.getWorld(GameUtils.getWorld()).getWorldBorder().setSize(WorldUtils.getSize(GameUtils.getWorld()));
-		Bukkit.getWorld(GameUtils.getWorld()).setPVP(false);
 		GameUtils.setWorld("");
 		GameUtils.setTeleported(false);
 		GameUtils.resetPlayers();
