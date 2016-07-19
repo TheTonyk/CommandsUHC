@@ -28,6 +28,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.thetonyk.UHC.Main;
 import com.thetonyk.UHC.Commands.HostCommand;
+import com.thetonyk.UHC.Features.DisplaySidebar;
 import com.thetonyk.UHC.Features.SpecInfo;
 import com.thetonyk.UHC.GUI.NumberGUI;
 import com.thetonyk.UHC.GUI.NumberGUI.NumberCallback;
@@ -719,6 +720,13 @@ public class GameInventory implements Listener {
 			GameUtils.setTeamSize(this.teamSize);
 			GameUtils.setAutoOpen(this.autoOpen);
 			if (this.autoOpen) GameUtils.scheduleOpening(this.time);
+			
+			for (Player online : Bukkit.getOnlinePlayers()) {
+				
+				DisplaySidebar.update(online);
+				
+			}
+			
 			return;
 			
 		}

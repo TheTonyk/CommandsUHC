@@ -3,7 +3,6 @@ package com.thetonyk.UHC;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.thetonyk.UHC.Main;
 import com.thetonyk.UHC.Commands.AcceptCommand;
@@ -117,6 +116,7 @@ public class Main extends JavaPlugin {
 		DisplayUtils.playersCount();
 		TeamsUtils.reload();
 		WorldUtils.loadAllWorlds();
+		OptionFeature.setup();
 		
 		long date = GameUtils.getDate();
 		
@@ -209,26 +209,6 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new RulesInventory(), this);
 		manager.registerEvents(new SelectorInventory(), this);
 		manager.registerEvents(new TeamsInventory(), this);
-		
-		try {
-        	
-            Class.forName("com.thetonyk.UHC.Packets.PacketHandler");
-            
-        } catch (Exception exception) {
-        	
-            Main.uhc.getLogger().severe("[Main] Unable to load the packet hanlder.");
-            
-        }
-		
-		new BukkitRunnable() {
-			
-			public void run() {
-				
-				OptionFeature.setup();
-				
-			}
-			
-		}.runTaskLater(Main.uhc, 20);
 		
 	}
 	

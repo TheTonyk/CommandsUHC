@@ -113,7 +113,7 @@ public class DisplaySidebar implements Listener {
 		
 			sidebar = scoreboard.registerNewObjective("sidebar", "dummy");
 			sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
-			sidebar.setDisplayName("§a§lUHC §8⫸ §7CommandsPVP");
+			sidebar.setDisplayName("§a§lUHC §8⫸ §7" + (GameUtils.getHost() == null ? "CommandsPVP" : GameUtils.getHost()));
 		
 		}
 		
@@ -130,7 +130,7 @@ public class DisplaySidebar implements Listener {
 			sidebar.getScore("    §8⫸ §7/helpop").setScore(i++);
 			sidebar.getScore("  §6Help").setScore(i++);
 			sidebar.getScore("   ").setScore(i++);
-			sidebar.getScore("    §8⫸ §7" + (GameUtils.getTeamType() == null ? "FFA" : GameUtils.getTeamType()) + (GameUtils.getTeamSize() > 1 ? GameUtils.getTeamSize() + " " : "")).setScore(i++);
+			sidebar.getScore("    §8⫸ §7" + (GameUtils.getTeamType() == null ? "FFA" : GameUtils.getTeamType().name()) + (GameUtils.getTeamSize() > 1 ? " To" + GameUtils.getTeamSize() : "")).setScore(i++);
 			sidebar.getScore("  §6Team Size").setScore(i++);
 			sidebar.getScore("    ").setScore(i++);
 			

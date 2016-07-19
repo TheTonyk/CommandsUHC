@@ -161,7 +161,7 @@ public class GameUtils {
 	
 	public static String getWorld() {
 		
-		return GameUtils.world != null ? GameUtils.world : GameUtils.getWorldSQL();
+		return GameUtils.world;
 		
 	}
 
