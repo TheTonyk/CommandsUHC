@@ -11,6 +11,7 @@ import com.thetonyk.UHC.Main;
 import com.thetonyk.UHC.Utils.GameUtils;
 import com.thetonyk.UHC.Utils.TeamsUtils;
 import com.thetonyk.UHC.Utils.GameUtils.Status;
+import com.thetonyk.UHC.Utils.GameUtils.TeamType;
 
 import static net.md_5.bungee.api.ChatColor.*;
 
@@ -44,6 +45,13 @@ public class InviteCommand implements CommandExecutor, TabCompleter {
 			if (status == Status.TELEPORT || status == Status.PLAY || status == Status.END) {
 				
 				sender.sendMessage(Main.PREFIX + "The game has already started.");
+				return true;
+				
+			}
+			
+			if (GameUtils.getTeamSize() < 2 || GameUtils.getTeamType() != TeamType.CHOSEN) {
+				
+				sender.sendMessage(Main.PREFIX + "You can't join a team in " + (GameUtils.getTeamType() == null ? "FFA" : GameUtils.getTeamType().name() + " teams") + ".");
 				return true;
 				
 			}

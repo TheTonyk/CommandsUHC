@@ -17,6 +17,7 @@ public class PmCommand implements CommandExecutor {
 			
 		}
 		
+		sender.sendMessage(Main.PREFIX + "Team's commands:");
 		sender.sendMessage("§8⫸ §6/t <message> §8- §7Talk with your team.");
 		sender.sendMessage("§8⫸ §6/tc §8- §7Send your coords to your team.");
 		return true;

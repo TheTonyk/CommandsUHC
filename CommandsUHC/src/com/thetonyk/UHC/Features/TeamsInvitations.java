@@ -12,6 +12,7 @@ import org.bukkit.inventory.Inventory;
 import com.thetonyk.UHC.Inventories.InviteInventory;
 import com.thetonyk.UHC.Utils.GameUtils;
 import com.thetonyk.UHC.Utils.GameUtils.Status;
+import com.thetonyk.UHC.Utils.GameUtils.TeamType;
 import com.thetonyk.UHC.Utils.TeamsUtils;
 
 public class TeamsInvitations implements Listener {
@@ -32,6 +33,8 @@ public class TeamsInvitations implements Listener {
 		if (GameUtils.getSpectate(uuid)) return;
 		
 		if (!world.getName().equals("lobby")) return;
+		
+		if (GameUtils.getTeamSize() < 2 || GameUtils.getTeamType() != TeamType.CHOSEN) return;
 		
 		if (TeamsUtils.getTeam(uuid) != null && TeamsUtils.getTeam(clicked.getUniqueId()) != null && TeamsUtils.getTeam(uuid).equalsIgnoreCase(TeamsUtils.getTeam(clicked.getUniqueId()))) return;
 				

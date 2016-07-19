@@ -13,6 +13,7 @@ import com.thetonyk.UHC.Inventories.TeamsInventory;
 import com.thetonyk.UHC.Utils.GameUtils;
 import com.thetonyk.UHC.Utils.PlayerUtils;
 import com.thetonyk.UHC.Utils.GameUtils.Status;
+import com.thetonyk.UHC.Utils.GameUtils.TeamType;
 import com.thetonyk.UHC.Utils.TeamsUtils;
 
 import static net.md_5.bungee.api.ChatColor.*;
@@ -46,7 +47,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			
 			sender.sendMessage(Main.PREFIX + "Usage of /team:");
 			
-			if (status != Status.TELEPORT && status != Status.PLAY && status != Status.END) {
+			if (status != Status.TELEPORT && status != Status.PLAY && status != Status.END && GameUtils.getTeamSize() > 1 && GameUtils.getTeamType() == TeamType.CHOSEN) {
 				
 				sender.sendMessage("§8⫸ §6/" + label + " invite <player> §8- §7Invite a player in your team.");
 				sender.sendMessage("§8⫸ §6/" + label + " accept <player> §8- §7Accept your invitations.");
@@ -77,6 +78,13 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 		String team = TeamsUtils.getTeam(player.getUniqueId());
 		
 		if (status != Status.TELEPORT && status != Status.PLAY && status != Status.END) {
+			
+			if (GameUtils.getTeamSize() < 2 || GameUtils.getTeamType() != TeamType.CHOSEN) {
+				
+				sender.sendMessage(Main.PREFIX + "You can't join a team in " + (GameUtils.getTeamType() == null ? "FFA" : GameUtils.getTeamType().name() + " teams") + ".");
+				return true;
+				
+			}
 			
 			if (args[0].equalsIgnoreCase("invite")) {
 				
