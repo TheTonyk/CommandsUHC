@@ -363,49 +363,6 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 		            
 		    } 
 		
-		if (args[0].equalsIgnoreCase("reset")) {
-		
-			GameUtils.resetGame();
-			sender.sendMessage(Main.PREFIX + "The game has been reseted.");
-			return true;
-		
-		}
-		
-		if (args[0].equalsIgnoreCase("slot")) {
-			      
-			if (args.length < 2) {
-							
-				sender.sendMessage(Main.PREFIX + "Usage: /" + label + " slot <number>");
-				return true;
-							
-			}
-		    	
-			int slot = 100;
-				
-			try {
-					
-				slot = Integer.parseInt(args[1]);
-				
-			} catch (Exception exception) {
-				
-				sender.sendMessage(Main.PREFIX + "Incorrect number.");
-				return true;
-				
-			}
-				
-			if (slot < 2 || slot > 200) {
-				
-				sender.sendMessage(Main.PREFIX + "Incorrect number.");
-				return true;
-				
-			}
-			
-			GameUtils.setSlots(slot);
-			sender.sendMessage(Main.PREFIX + "New slots: §a" + slot + "§7.");
-			return true;
-			            
-		}
-		
 		sender.sendMessage(Main.PREFIX + "Usage of /world:");
 		sender.sendMessage("§8⫸ §6/world create §8- §7Create a world.");
 		sender.sendMessage("§8⫸ §6/world delete §8- §7Delete a world.");
