@@ -38,6 +38,8 @@ public class GameUtils {
 	private static Map<UUID, Integer> kills = GameUtils.getKillsSQL();
 	private static TeamType teamType = GameUtils.getTeamTypeSQL();
 	private static int teamSize = GameUtils.getTeamSizeSQL();
+	private static long date = GameUtils.getDateSQL();
+	private static UUID host = GameUtils.getHostSQL();
 	
 	public static String getServer() {
 
@@ -729,11 +731,7 @@ public class GameUtils {
 			
 			teamType = TeamType.valueOf(type);
 			
-		} catch (Exception exception) {
-		
-			Bukkit.getLogger().severe("[Game] Error to parse team type '" + type + "' of the uhc on the server " + GameUtils.getServer() + ".");
-			
-		}
+		} catch (Exception exception) {}
 	
 		return teamType;
 		
@@ -748,7 +746,7 @@ public class GameUtils {
 	
 	private static void setTeamTypeSQL(TeamType teamType) {
 		
-		DatabaseUtils.sqlInsert("UPDATE uhc SET teamType = '" + teamType.toString() + "' WHERE server = '" + GameUtils.getServer() + "';");
+		DatabaseUtils.sqlInsert("UPDATE uhc SET teamType = '" + (teamType == null ? "null" : teamType.toString()) + "' WHERE server = '" + GameUtils.getServer() + "';");
 		
 	}
 	
@@ -780,7 +778,7 @@ public class GameUtils {
 		
 	}
 	
-	public static void setTeamType(int teamSize) {
+	public static void setTeamSize(int teamSize) {
 		
 		GameUtils.teamSize = teamSize;
 		GameUtils.setTeamSizeSQL(teamSize);
@@ -791,7 +789,89 @@ public class GameUtils {
 		
 		DatabaseUtils.sqlInsert("UPDATE uhc SET teamSize = '" + teamSize + "' WHERE server = '" + GameUtils.getServer() + "';");
 		
-	}	
+	}
+	
+	public static long getDate() {
+		
+		return GameUtils.date;
+		
+	}
+	
+	private static long getDateSQL() {
+		
+		long date = 0;
+		
+		try {
+			
+			ResultSet req = DatabaseUtils.sqlQuery("SELECT date FROM uhc WHERE server = '" + GameUtils.getServer() + "';");
+			
+			if (req.next()) date = req.getLong("date");
+			
+			req.close();
+			
+		} catch (SQLException exception) {
+			
+			Bukkit.getLogger().severe("[Game] Error to get date of the uhc on server " + GameUtils.getServer() + ".");
+			
+		}
+		
+		return date;
+		
+	}
+	
+	public static void setDate(long date) {
+		
+		GameUtils.date = date;
+		GameUtils.setDateSQL(date);
+		
+	}
+	
+	private static void setDateSQL(long date) {
+		
+		DatabaseUtils.sqlInsert("UPDATE uhc SET date = " + date + " WHERE server = '" + GameUtils.getServer() + "';");
+		
+	}
+	
+	public static UUID getHost() {
+		
+		return GameUtils.host;
+		
+	}
+	
+	private static UUID getHostSQL() {
+		
+		String host = null;
+		
+		try {
+			
+			ResultSet req = DatabaseUtils.sqlQuery("SELECT host FROM uhc WHERE server = '" + GameUtils.getServer() + "';");
+			
+			if (req.next()) host = req.getString("host");
+			
+			req.close();
+			
+		} catch (SQLException exception) {
+			
+			Bukkit.getLogger().severe("[Game] Error to get host of the uhc on server " + GameUtils.getServer() + ".");
+			
+		}
+		
+		return host.equalsIgnoreCase("null") ? null : UUID.fromString(host);
+		
+	}
+	
+	public static void setHost(UUID host) {
+		
+		GameUtils.host = host;
+		GameUtils.setHostSQL(host);
+		
+	}
+	
+	private static void setHostSQL(UUID host) {
+		
+		DatabaseUtils.sqlInsert("UPDATE uhc SET host = '" + (host == null ? "null" : host.toString()) + "' WHERE server = '" + GameUtils.getServer() + "';");
+		
+	}
 	
 	private static void resetKills() {
 		
@@ -895,6 +975,10 @@ public class GameUtils {
 		GameUtils.setMeetup(3600);
 		GameUtils.setPVE(0);
 		GameUtils.resetKills();
+		GameUtils.setDate(0);
+		GameUtils.setHost(null);
+		GameUtils.setTeamSize(1);
+		GameUtils.setTeamType(null);
 		if (DisplayTimers.timer != null) DisplayTimers.timer.cancel();
 		DisplayTimers.timer = null;
 		DisplayTimers.time = 0;

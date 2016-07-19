@@ -119,14 +119,24 @@ public class DisplaySidebar implements Listener {
 		
 		if (status != Status.PLAY && status != Status.END) {
 
-			sidebar.getScore("   ").setScore(5);
-			sidebar.getScore("  §6Help").setScore(4);
-			sidebar.getScore("    §8⫸ §7/rules").setScore(3);
-			sidebar.getScore("    §8⫸ §7/helpop").setScore(2);
+			int i = 0;
+
+			sidebar.getScore("  §b@CommandsPVP").setScore(i++);
+			sidebar.getScore(" ").setScore(i++);
+			sidebar.getScore("    §8⫸ §7Vanilla+").setScore(i++);
+			sidebar.getScore("  §6Scenarios").setScore(i++);
+			sidebar.getScore("  ").setScore(i++);
+			sidebar.getScore("    §8⫸ §7/rules").setScore(i++);
+			sidebar.getScore("    §8⫸ §7/helpop").setScore(i++);
+			sidebar.getScore("  §6Help").setScore(i++);
+			sidebar.getScore("   ").setScore(i++);
+			sidebar.getScore("    §8⫸ §7" + (GameUtils.getTeamType() == null ? "FFA" : GameUtils.getTeamType()) + (GameUtils.getTeamSize() > 1 ? GameUtils.getTeamSize() + " " : "")).setScore(i++);
+			sidebar.getScore("  §6Team Size").setScore(i++);
+			sidebar.getScore("    ").setScore(i++);
 			
 		} else {
 		
-			sidebar.getScore("   ").setScore(99);
+			sidebar.getScore("  ").setScore(99);
 			sidebar.getScore("  §6PVE §8⫸ §a" + GameUtils.getPVE()).setScore(98);
 			
 			Map<UUID, Integer> kills = GameUtils.getKills();
@@ -138,11 +148,11 @@ public class DisplaySidebar implements Listener {
 				sidebar.getScore(score).setScore(kills.get(killer));
 				
 			}
+			
+			sidebar.getScore(" ").setScore(-1);
+			
 		
 		}
-		
-		sidebar.getScore("  ").setScore(-1);
-		sidebar.getScore("  §b@CommandsPVP").setScore(-2);
 		
 	}
 	

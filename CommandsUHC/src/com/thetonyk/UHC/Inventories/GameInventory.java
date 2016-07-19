@@ -33,6 +33,7 @@ import com.thetonyk.UHC.GUI.NumberGUI;
 import com.thetonyk.UHC.GUI.NumberGUI.NumberCallback;
 import com.thetonyk.UHC.GUI.SignGUI;
 import com.thetonyk.UHC.GUI.SignGUI.SignCallback;
+import com.thetonyk.UHC.Utils.GameUtils;
 import com.thetonyk.UHC.Utils.GameUtils.GameType;
 import com.thetonyk.UHC.Utils.GameUtils.TeamType;
 import com.thetonyk.UHC.Utils.ItemsUtils;
@@ -689,6 +690,13 @@ public class GameInventory implements Listener {
 			
 			}
 			
+			GameUtils.setTeamType(this.teamType);
+			GameUtils.setSlots(this.slots);
+			GameUtils.setPVP(this.pvp);
+			GameUtils.setMeetup(this.meetup);
+			GameUtils.setDate(this.time);
+			GameUtils.setHost(player.getUniqueId());
+			GameUtils.setTeamSize(this.teamSize);
 			return;
 			
 		}
