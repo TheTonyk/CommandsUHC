@@ -47,7 +47,7 @@ public class DisplayTab implements Listener {
 		DecimalFormat format = new DecimalFormat("##.##");
 		int pvpTime = DisplayTimers.getTimeLeftPVP();
 		int meetupTime = DisplayTimers.getTimeLeftMeetup();
-		World world = Bukkit.getWorld(GameUtils.getWorld());
+		World world = GameUtils.getWorld() == null ? null : Bukkit.getWorld(GameUtils.getWorld());
 		
 		double rawTps = MinecraftServer.getServer().recentTps[0];
 		String tps = format.format(rawTps);

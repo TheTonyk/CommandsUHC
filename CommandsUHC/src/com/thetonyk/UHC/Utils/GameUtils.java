@@ -4,9 +4,12 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,12 +19,14 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.thetonyk.UHC.Main;
 import com.thetonyk.UHC.Features.DisplayTimers;
+import com.thetonyk.UHC.Features.MeetupWarning;
 import com.thetonyk.UHC.Features.DQLogout;
 
 public class GameUtils {
@@ -40,6 +45,9 @@ public class GameUtils {
 	private static int teamSize = GameUtils.getTeamSizeSQL();
 	private static long date = GameUtils.getDateSQL();
 	private static UUID host = GameUtils.getHostSQL();
+	private static Boolean autoOpen = GameUtils.getAutoOpenSQL();
+	private static TimerTask timer = null;
+	private static BukkitTask openTask = null;
 	
 	public static String getServer() {
 
@@ -97,6 +105,16 @@ public class GameUtils {
 			return this.description;
 			
 		}
+		
+	}
+	
+	public static void scheduleOpening(long time) {
+		
+		Date date = new Date(time);
+		Timer timer = new Timer();
+		GameUtils.timer = new AutoOpen();
+		
+		timer.schedule(GameUtils.timer, date);
 		
 	}
 	
@@ -165,7 +183,7 @@ public class GameUtils {
 			
 		}
 		
-		return world == "" ? null : world;
+		return world.length() < 1 ? null : world;
 		
 	}
 	
@@ -873,6 +891,47 @@ public class GameUtils {
 		
 	}
 	
+	public static Boolean getAutoOpen() {
+		
+		return GameUtils.autoOpen;
+		
+	}
+	
+	private static Boolean getAutoOpenSQL() {
+		
+		Boolean autoOpen = false;
+		
+		try {
+			
+			ResultSet req = DatabaseUtils.sqlQuery("SELECT autoOpen FROM uhc WHERE server = '" + GameUtils.getServer() + "';");
+			
+			if (req.next()) autoOpen = req.getBoolean("autoOpen");
+			
+			req.close();
+			
+		} catch (SQLException exception) {
+			
+			Bukkit.getLogger().severe("[Game] Error to get auto open state of the uhc on server " + GameUtils.getServer() + ".");
+			
+		}
+		
+		return autoOpen;
+		
+	}
+	
+	public static void setAutoOpen(Boolean autoOpen) {
+		
+		GameUtils.autoOpen = autoOpen;
+		GameUtils.setAutoOpenSQL(autoOpen);
+		
+	}
+	
+	private static void setAutoOpenSQL(Boolean autoOpen) {
+		
+		DatabaseUtils.sqlInsert("UPDATE uhc SET autoOpen = " + (autoOpen ? 1 : 0) + " WHERE server = '" + GameUtils.getServer() + "';");
+		
+	}
+	
 	private static void resetKills() {
 		
 		GameUtils.kills = null;
@@ -990,6 +1049,7 @@ public class GameUtils {
 		DisplayTimers.pvpTime = 900;
 		DisplayTimers.meetupTime = 3600;
 		DQLogout.reset();
+		if (GameUtils.openTask != null) GameUtils.openTask.cancel();
 		
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			
@@ -1057,6 +1117,44 @@ public class GameUtils {
 			}
 		
 		}.runTaskAsynchronously(Main.uhc);
+		
+	}
+	
+	public static class AutoOpen extends TimerTask {
+		
+		public void run() {
+			
+			Bukkit.setWhitelist(false);
+			
+			GameUtils.openTask = new BukkitRunnable() {
+				
+				int time = GameUtils.getTeamSize() > 1 && GameUtils.getTeamType() == TeamType.CHOSEN ? 600 : 300;
+				
+				public void run() {
+					
+					if (time < 1) {
+						
+						cancel();
+						Bukkit.setWhitelist(true);
+						return;
+						
+					}
+					
+					for (Player player : Bukkit.getOnlinePlayers()) {
+						
+						if (MeetupWarning.runnables.containsKey(player.getUniqueId())) continue;
+							
+						DisplayUtils.sendActionBar(player, "§7Game start §8⫸ §a" + DisplayTimers.getFormatedTime(time));
+							
+					}
+					
+					time--;
+					
+				}
+				
+			}.runTaskTimer(Main.uhc, 1, 20);
+			
+		}
 		
 	}
 

@@ -82,12 +82,14 @@ import com.thetonyk.UHC.Inventories.SelectorInventory;
 import com.thetonyk.UHC.Inventories.TeamsInventory;
 import com.thetonyk.UHC.Utils.BiomesUtils;
 import com.thetonyk.UHC.Utils.DisplayUtils;
+import com.thetonyk.UHC.Utils.GameUtils;
 import com.thetonyk.UHC.Utils.TeamsUtils;
 import com.thetonyk.UHC.Utils.WorldUtils;
 
 import static net.md_5.bungee.api.ChatColor.*;
 
 import java.io.File;
+import java.util.Date;
 
 import net.md_5.bungee.api.chat.ComponentBuilder;
 
@@ -115,6 +117,14 @@ public class Main extends JavaPlugin {
 		DisplayUtils.playersCount();
 		TeamsUtils.reload();
 		WorldUtils.loadAllWorlds();
+		
+		long date = GameUtils.getDate();
+		
+		if (date  > 0 && new Date().getTime() < date && GameUtils.getAutoOpen()) {
+			
+			GameUtils.scheduleOpening(date);
+			
+		}
 		
 		getConfig().options().copyDefaults(false);
 		saveConfig();

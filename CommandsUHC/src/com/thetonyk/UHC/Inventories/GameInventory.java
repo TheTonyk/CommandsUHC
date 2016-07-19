@@ -60,6 +60,7 @@ public class GameInventory implements Listener {
 	private GameType game;
 	private URL twitter;
 	private URL reddit;
+	private Boolean autoOpen;
 	
 	public GameInventory() {
 		
@@ -77,6 +78,7 @@ public class GameInventory implements Listener {
 		this.game = GameType.REDDIT;
 		this.twitter = null;
 		this.reddit = null;
+		this.autoOpen = false;
 		
 		update();
 		
@@ -119,24 +121,7 @@ public class GameInventory implements Listener {
 				ItemStack meetup = ItemsUtils.createItem(Material.IRON_BARDING, "§8⫸ §7Meetup: §a" + this.meetup + "min", 1, 0);
 				
 				lore.add(" ");
-				
-				String line = "§8⫸ §7";
-				
-				for (String word : this.game.getDescription().split(" ")) {
-					
-					line += word + " ";
-					
-					if (line.split(" ").length >= 4) {
-						
-						lore.add(line);
-						line = "§8⫸ §7";
-						
-					}
-					
-				}
-				
-				if (line.length() > 7) lore.add(line);
-				
+				formatLore(lore, this.game.getDescription());
 				lore.add(" ");
 				ItemStack game = ItemsUtils.createItem(Material.PAPER, "§8⫸ §7Type: §6" + SpecInfo.formatName(this.game.toString()), 1, 0, lore);
 				lore.clear();
@@ -166,51 +151,55 @@ public class GameInventory implements Listener {
 						int day = calendar.get(Calendar.DAY_OF_MONTH);
 						int month = calendar.get(Calendar.MONTH);
 						
-						if (minutes != 0 && minutes != 15 && minutes != 30 && minutes != 45) {
-							
-							lore.add("§8⫸ §7You can only schedule UHC at these times:");
-							lore.add("§8⫸ §6XX:00 §8| §6XX:15 §8| §6XX:30 §8| §6XX:45");
-							lore.add(" ");
-							valid = false;
-							
-						}
+						if (this.game == GameType.REDDIT) {
 						
-						if (month > nowMonth + 1 || (month > nowMonth && day > nowDay)) {
-							
-							lore.add("§8⫸ §7UHC must be scheduled at maximum a month.");
-							lore.add(" ");
-							valid = false;
-							
-						}
-						
-						if ((parsedTime - 1800000) < new Date().getTime()) {
-							
-							lore.add("§8⫸ §7UHC must be scheduled at least 30min before.");
-							lore.add(" ");
-							valid = false;
-							
-						}
-						
-						if (uhcs == null) {
-							
-							lore.add("§8⫸ §7Checking others UHC on Reddit...");
-							lore.add(" ");
-							valid = false;
-							
-						}
-						else {
-							
-							for (Match uhc : uhcs) {
+							if (minutes != 0 && minutes != 15 && minutes != 30 && minutes != 45) {
 								
-								if (parsedTime != uhc.getTime() * 1000) continue;
-								
-								lore.add("§8⫸ §cAn UHC is already scheduled at this hour.");
+								lore.add("§8⫸ §7You can only schedule UHC at these times:");
+								lore.add("§8⫸ §6XX:00 §8| §6XX:15 §8| §6XX:30 §8| §6XX:45");
 								lore.add(" ");
 								valid = false;
-								break;
 								
 							}
 							
+							if (month > nowMonth + 1 || (month > nowMonth && day > nowDay)) {
+								
+								lore.add("§8⫸ §7UHC must be scheduled at maximum a month.");
+								lore.add(" ");
+								valid = false;
+								
+							}
+							
+							if ((parsedTime - 1800000) < new Date().getTime()) {
+								
+								lore.add("§8⫸ §7UHC must be scheduled at least 30min before.");
+								lore.add(" ");
+								valid = false;
+								
+							}
+							
+							if (uhcs == null) {
+								
+								lore.add("§8⫸ §7Checking others UHC on Reddit...");
+								lore.add(" ");
+								valid = false;
+								
+							}
+							else {
+								
+								for (Match uhc : uhcs) {
+									
+									if (parsedTime != uhc.getTime() * 1000) continue;
+									
+									lore.add("§8⫸ §cAn UHC is already scheduled at this hour.");
+									lore.add(" ");
+									valid = false;
+									break;
+									
+								}
+								
+							}
+						
 						}
 						
 					}
@@ -227,12 +216,20 @@ public class GameInventory implements Listener {
 				ItemStack date = ItemsUtils.createItem(Material.WATCH, "§8⫸ §7Time: §6" + (this.time < 1 ? "§cNone" : this.format.format(new Date(this.time))), 1, 0, lore);
 				lore.clear();
 				
+				lore.add(" ");
+				String text = "The whitelist will " + (this.autoOpen ? "" : "Not") + " be automatically open at the hour of the UHC";
+				formatLore(lore, text);
+				lore.add(" ");
+				ItemStack autoOpen = ItemsUtils.createItem(Material.COMMAND, "§8⫸ §7Auto-Open: " + (this.autoOpen ? "§aEnabled" : "§cDisabled"), 1, 0, lore);
+				lore.clear();
+				
 				this.inventory.setItem(10, team);
 				this.inventory.setItem(11, slots);
 				this.inventory.setItem(12, pvp);
 				this.inventory.setItem(13, meetup);
 				this.inventory.setItem(14, game);
 				this.inventory.setItem(15, date);
+				this.inventory.setItem(16, autoOpen);
 				break;
 			case TEAMS:
 				
@@ -436,6 +433,21 @@ public class GameInventory implements Listener {
 				if (item.getItemMeta().getDisplayName().startsWith("§8⫸ §7Type: §6")) {
 					
 					this.game = this.game.next();
+					
+					if (this.game == GameType.REDDIT) {
+						
+						Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"), Locale.ENGLISH);
+						calendar.setTimeInMillis(this.time);
+						int day = calendar.get(Calendar.DAY_OF_MONTH);
+						int month = calendar.get(Calendar.MONTH);
+						int hour = calendar.get(Calendar.HOUR_OF_DAY);
+						int minutes = calendar.get(Calendar.MINUTE);
+						
+						this.hour = day + "/" + month + " " + hour + ":" + minutes;
+						this.time = 0;
+						
+					}
+					
 					update();
 					return;
 					
@@ -503,6 +515,14 @@ public class GameInventory implements Listener {
 						
 					});
 					
+					return;
+					
+				}
+				
+				if (item.getItemMeta().getDisplayName().startsWith("§8⫸ §7Auto-Open: ")) {
+					
+					this.autoOpen = !this.autoOpen;
+					update();
 					return;
 					
 				}
@@ -688,7 +708,7 @@ public class GameInventory implements Listener {
 					
 				});
 			
-			}
+			} else Bukkit.broadcastMessage(Main.PREFIX + "The UHC has been schedule for the " + format.format(time) + ".");
 			
 			GameUtils.setTeamType(this.teamType);
 			GameUtils.setSlots(this.slots);
@@ -697,6 +717,8 @@ public class GameInventory implements Listener {
 			GameUtils.setDate(this.time);
 			GameUtils.setHost(player.getUniqueId());
 			GameUtils.setTeamSize(this.teamSize);
+			GameUtils.setAutoOpen(this.autoOpen);
+			if (this.autoOpen) GameUtils.scheduleOpening(this.time);
 			return;
 			
 		}
@@ -765,6 +787,27 @@ public class GameInventory implements Listener {
 		}
 		
 		return calendar.getTimeInMillis();
+		
+	}
+	
+	private static void formatLore(List<String> lore, String text) {
+		
+		String line = "§8⫸ §7";
+		
+		for (String word : text.split(" ")) {
+			
+			line += word + " ";
+			
+			if (line.split(" ").length >= 4) {
+				
+				lore.add(line);
+				line = "§8⫸ §7";
+				
+			}
+			
+		}
+		
+		if (line.length() > 7) lore.add(line);
 		
 	}
 	
