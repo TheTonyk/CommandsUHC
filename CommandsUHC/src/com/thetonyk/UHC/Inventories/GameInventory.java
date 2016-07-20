@@ -119,7 +119,7 @@ public class GameInventory implements Listener {
 				ItemStack slots = ItemsUtils.createItem(Material.SKULL_ITEM, "§8⫸ §7Slots: §a" + this.slots, (int) Math.floor(this.slots / 10), 3);
 				ItemStack pvp = ItemsUtils.createItem(Material.IRON_SWORD, "§8⫸ §7PVP: §a" + this.pvp + "min", 1, 0);
 				pvp = ItemsUtils.hideFlags(pvp);
-				ItemStack meetup = ItemsUtils.createItem(Material.IRON_BARDING, "§8⫸ §7Meetup: §a" + this.meetup + "min", 1, 0);
+				ItemStack meetup = ItemsUtils.createItem(Material.IRON_FENCE, "§8⫸ §7Meetup: §a" + this.meetup + "min", 1, 0);
 				
 				lore.add(" ");
 				formatLore(lore, this.game.getDescription());
@@ -628,7 +628,11 @@ public class GameInventory implements Listener {
 			
 			if (this.game == GameType.REDDIT || this.game == GameType.TWITTER) {
 			
-				MatchesUtils.postTweet(Main.uhc.getConfig().getString("TwitterConsumerKey"), Main.uhc.getConfig().getString("TwitterConsumerSecret"), Main.uhc.getConfig().getString("TwitterAccessToken"), Main.uhc.getConfig().getString("TwitterAccessSecret"), "Test", new MatchesCallback<URL>() {
+				SimpleDateFormat hour = new SimpleDateFormat("HH:mm zzz");
+				hour.setTimeZone(TimeZone.getTimeZone("UTC"));
+				String tweet = "⫸ " + (GameUtils.getTeamType() == null ? "FFA" : (GameUtils.getTeamSize() < 2 ? SpecInfo.formatName(GameUtils.getTeamType().name()) : GameUtils.getTeamType().getSyntax() + "To" + GameUtils.getTeamSize())) + " | Vanila+\n\n⫸ Open: " + hour.format(new Date(this.time)) + /*"\n⫸ Post: " + this.reddit.toString() + */"\n\n⫸ Host: " + player.getName() + "\n⫸ IP: commandspvp.com";
+				
+				MatchesUtils.postTweet(Main.uhc.getConfig().getString("TwitterConsumerKey"), Main.uhc.getConfig().getString("TwitterConsumerSecret"), Main.uhc.getConfig().getString("TwitterAccessToken"), Main.uhc.getConfig().getString("TwitterAccessSecret"), tweet, new MatchesCallback<URL>() {
 	
 					@Override
 					public void onSuccess(URL url) {
@@ -644,7 +648,12 @@ public class GameInventory implements Listener {
 							
 						}
 						
-						new MatchesUtils.Submit(player, "Test Title", "Test Test Test", "ultrahardcore", new MatchesCallback<URL>() {
+						SimpleDateFormat hour = new SimpleDateFormat("MMM dd HH:mm zzz");
+						hour.setTimeZone(TimeZone.getTimeZone("UTC"));
+						String title = hour.format(new Date(time)) + " EU - " + player.getName() + " #65 - " + (GameUtils.getTeamType() == null ? "FFA" : (GameUtils.getTeamSize() < 2 ? SpecInfo.formatName(GameUtils.getTeamType().name()) : GameUtils.getTeamType().getSyntax() + "To" + GameUtils.getTeamSize())) + " - Vanilla+ [Beta Game] [UHC by CommandsPVP]";
+						String text = "Match|Informations\n:--|:--\n**WH Open**|" + hour.format(new Date(time)) + "\n**Start**|" + (GameUtils.getTeamSize() > 1 && GameUtils.getTeamType() == TeamType.CHOSEN ? "10" : "5") + " minutes after WH open\n**Team Size**|" + (GameUtils.getTeamType() == null ? "FFA" : SpecInfo.formatName(GameUtils.getTeamType().name())) + (GameUtils.getTeamSize() > 1 ? " To" + GameUtils.getTeamSize() : "") + "\n**Map Size**|2000x2000\n**PVP Time**|" + pvp + ":00 after start\n**Meetup Time**|" + meetup + ":00 after start\n**Gamemode**|Vanilla\n**Slots**|" + slots + " slots\n\nScénarios|Informations\n:--|:--\n**Vanilla**|Just a normal UHC.\n\nServer|Informations\n:--|:--\n**Server**|Dedicated Server (*OVH*)\n**Location**|Paris, *France*\n**RAM**|10 GB\n**Version**|Server: 1.8.8 (Compatible : 1.8.0 - 1.8.9)\n**IP**|commandspvp.com ^Direct ^IP: ^uhc.commandspvp.com\n\nGame|Informations\n:--|:--\n**Nether**|Disabled\n**Golden Head**|Enabled\n**Starter Food**|10 Cooked Beef\n**Mining Rules**|Rollercoaster\n**Absorption**|Enabled\n**Saturation Fix**|Enabled\n\nUse **/rules** in-game for any informations";
+						
+						new MatchesUtils.Submit(player, title, text, "UHCMatches", new MatchesCallback<URL>() {
 							
 							@Override
 							public void onSuccess(URL url) {
@@ -652,8 +661,8 @@ public class GameInventory implements Listener {
 								reddit = url;
 								cancel();
 								Bukkit.broadcastMessage(Main.PREFIX + "The UHC has been schedule for the " + format.format(time) + ".");
-								Bukkit.broadcastMessage(Main.PREFIX + twitter.toString());
-								Bukkit.broadcastMessage(Main.PREFIX + reddit.toString());
+								Bukkit.broadcastMessage("§7" + twitter.toString());
+								Bukkit.broadcastMessage("§7" + reddit.toString());
 								
 							}
 

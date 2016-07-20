@@ -183,7 +183,7 @@ public class GameUtils {
 			
 		}
 		
-		return world.length() < 1 ? null : world;
+		return world.equalsIgnoreCase("null") ? null : world;
 		
 	}
 	
@@ -196,7 +196,7 @@ public class GameUtils {
 	
 	private static void setWorldSQL(String newWorld) {
 		
-		DatabaseUtils.sqlInsert("UPDATE uhc SET world = '" + newWorld + "' WHERE server = '" + GameUtils.getServer() + "';");
+		DatabaseUtils.sqlInsert("UPDATE uhc SET world = '" + (newWorld == null ? "null" : newWorld) + "' WHERE server = '" + GameUtils.getServer() + "';");
 		
 	}
 	
@@ -721,7 +721,7 @@ public class GameUtils {
 	
 	public static TeamType getTeamType() {
 		
-		return GameUtils.teamType != null ? GameUtils.teamType : GameUtils.getTeamTypeSQL();
+		return GameUtils.teamType;
 		
 	}
 	
@@ -1029,7 +1029,7 @@ public class GameUtils {
 		}
 		
 		GameUtils.setStatus(Status.NONE);		
-		GameUtils.setWorld("");
+		GameUtils.setWorld(null);
 		GameUtils.setTeleported(false);
 		GameUtils.resetPlayers();
 		GameUtils.setSlots(100);

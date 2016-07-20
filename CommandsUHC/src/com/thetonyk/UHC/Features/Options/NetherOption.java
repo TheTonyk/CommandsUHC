@@ -19,7 +19,7 @@ public class NetherOption extends Option implements Listener {
 	
 	public NetherOption() {
 		
-		super("Nether", new ItemStack(Material.NETHERRACK), true);
+		super("Nether", new ItemStack(Material.NETHERRACK), false);
 		
 	}
 	

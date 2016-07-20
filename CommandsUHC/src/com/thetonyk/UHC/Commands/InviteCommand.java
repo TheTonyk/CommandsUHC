@@ -8,6 +8,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.thetonyk.UHC.Main;
+import com.thetonyk.UHC.Features.SpecInfo;
 import com.thetonyk.UHC.Utils.GameUtils;
 import com.thetonyk.UHC.Utils.TeamsUtils;
 import com.thetonyk.UHC.Utils.GameUtils.Status;
@@ -51,7 +52,7 @@ public class InviteCommand implements CommandExecutor, TabCompleter {
 			
 			if (GameUtils.getTeamSize() < 2 || GameUtils.getTeamType() != TeamType.CHOSEN) {
 				
-				sender.sendMessage(Main.PREFIX + "You can't join a team in " + (GameUtils.getTeamType() == null ? "FFA" : GameUtils.getTeamType().name() + " teams") + ".");
+				sender.sendMessage(Main.PREFIX + "You can't join a team in " + (GameUtils.getTeamType() == null ? "FFA" : SpecInfo.formatName(GameUtils.getTeamType().name()) + " teams") + ".");
 				return true;
 				
 			}

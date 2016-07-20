@@ -57,6 +57,8 @@ public class DisplayTimers implements Listener {
 					
 				}
 				
+				time++;
+				
 				if (time % 60 == 0) GameUtils.setTime(time);
 				
 				int finalHeal = 45 - time;
@@ -118,8 +120,6 @@ public class DisplayTimers implements Listener {
 				if (pvp == 0) Bukkit.getPluginManager().callEvent(new PVPEvent());
 				
 				if (meetup == 0) Bukkit.getPluginManager().callEvent(new MeetupEvent());
-				
-				time++;
 				
 			}
 			

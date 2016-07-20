@@ -210,6 +210,8 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new SelectorInventory(), this);
 		manager.registerEvents(new TeamsInventory(), this);
 		
+		manager.registerEvents(new TeleportCommand(), this);
+		
 	}
 	
 	@Override

@@ -53,7 +53,7 @@ public class LoginPlayer implements Listener {
 		
 		if ((status == Status.TELEPORT || status == Status.PLAY || status == Status.END) && (!GameUtils.getDeath(uuid) || GameUtils.getSpectate(uuid))) return;
 			
-		Title title = new Title("§aUHC by CommandsPVP", "§7UHC §acTo2 §7⋯ Nether §aOFF §7⋯ CutClean §aOFF", 0, 40, 10);
+		Title title = new Title("§aUHC by CommandsPVP", "§7UHC §a" + (GameUtils.getTeamType() == null ? "FFA" : (GameUtils.getTeamSize() < 2 ? SpecInfo.formatName(GameUtils.getTeamType().name()) : GameUtils.getTeamType().getSyntax() + "To" + GameUtils.getTeamSize())) + (GameUtils.getHost() != null ? " §7⋯ Host §a" + PlayerUtils.getName(PlayerUtils.getId(GameUtils.getHost())) : ""), 0, 40, 10);
 		player.sendTitle(title);
 		
 		Location spawn = Bukkit.getWorld("lobby").getSpawnLocation().add(0.5, 0, 0.5);

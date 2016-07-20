@@ -53,7 +53,7 @@ public class DeathRespawn implements Listener {
 		player.setGameMode(GameMode.ADVENTURE);
 		player.setMaxHealth(20.0);
 		
-		if (GameUtils.getDeath(player.getUniqueId())) return;
+		//if (GameUtils.getDeath(player.getUniqueId())) return;
 		
 		player.sendMessage(Main.PREFIX + "Thanks for playing! Please don't rage or insult please.");
 		
@@ -63,10 +63,6 @@ public class DeathRespawn implements Listener {
 		text.append(" for next games.").retain(FormatRetention.NONE).color(GRAY);
 		
 		player.spigot().sendMessage(text.create());
-		
-		GameUtils.setDeath(player.getUniqueId(), true);
-		player.setWhitelisted(false);
-		LoginPlayer.updateVisibility();
 		
 	}
 	

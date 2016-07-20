@@ -35,6 +35,10 @@ public class DeathMessage implements Listener {
 		String killerName = killer == null ? null : PlayerUtils.getRank(killer.getUniqueId()).getPrefix() + ((TeamsUtils.getTeam(killer.getUniqueId()) != null) ? TeamsUtils.getTeamPrefix(killer.getUniqueId()) : "§7") + killer.getName() + "§7";		
 		String message = Main.PREFIX + "§7" + oldMessage.substring(0, oldMessage.contains("using") ? oldMessage.indexOf("using") : oldMessage.length()).replaceAll(name, victimName).replaceAll(killer != null ? killer.getName() : "", killer != null ? killerName : "");
 		
+		GameUtils.setDeath(uuid, true);
+		event.getEntity().setWhitelisted(false);
+		LoginPlayer.updateVisibility();
+		
 		Bukkit.broadcastMessage(message);
 		
 		for (Player player : Bukkit.getOnlinePlayers()) {
