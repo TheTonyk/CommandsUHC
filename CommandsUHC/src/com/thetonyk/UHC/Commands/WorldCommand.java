@@ -146,11 +146,11 @@ public class WorldCommand implements CommandExecutor, TabCompleter {
 			Bukkit.broadcastMessage("§8⫸ §7Nether: §a" + nether);
 			Bukkit.broadcastMessage("§8⫸ §7End: §a" + end);
 			
-			WorldUtils.createWorld(name, Environment.NORMAL, seed, WorldType.NORMAL, radius);
+			WorldUtils.createWorld(name, Environment.NORMAL, seed, WorldType.NORMAL, radius, false);
 			
-			if (nether) WorldUtils.createWorld(name + "_nether", Environment.NETHER, seed, WorldType.NORMAL, radius);	
+			if (nether) WorldUtils.createWorld(name + "_nether", Environment.NETHER, seed, WorldType.NORMAL, radius, false);	
 			
-			if (end) WorldUtils.createWorld(name + "_end", Environment.THE_END, seed, WorldType.NORMAL, radius);	
+			if (end) WorldUtils.createWorld(name + "_end", Environment.THE_END, seed, WorldType.NORMAL, radius, false);	
 			
 			sender.sendMessage(Main.PREFIX + "The world '§6" + name + "§7' has been created.");
 			return true;

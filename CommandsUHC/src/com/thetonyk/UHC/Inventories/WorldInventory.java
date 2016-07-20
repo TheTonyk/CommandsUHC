@@ -481,11 +481,11 @@ public class WorldInventory implements Listener {
 				
 			}
 			
-			WorldUtils.createWorld(this.name, Environment.NORMAL, this.seed, WorldType.NORMAL, this.size);
+			WorldUtils.createWorld(this.name, Environment.NORMAL, this.seed, WorldType.NORMAL, this.size, false);
 			
-			if (nether) WorldUtils.createWorld(this.name + "_nether", Environment.NETHER, this.seed, WorldType.NORMAL, this.size);	
+			if (nether) WorldUtils.createWorld(this.name + "_nether", Environment.NETHER, this.seed, WorldType.NORMAL, this.size, false);	
 			
-			if (end) WorldUtils.createWorld(this.name + "_end", Environment.THE_END, this.seed, WorldType.NORMAL, this.size);	
+			if (end) WorldUtils.createWorld(this.name + "_end", Environment.THE_END, this.seed, WorldType.NORMAL, this.size, false);	
 			
 			Bukkit.broadcastMessage(Main.PREFIX + "The world '§6" + this.name + "§7' has been created.");
 			

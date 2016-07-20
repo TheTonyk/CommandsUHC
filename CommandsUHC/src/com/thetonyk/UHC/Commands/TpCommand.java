@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import com.thetonyk.UHC.Main;
 import com.thetonyk.UHC.Utils.GameUtils;
+import com.thetonyk.UHC.Utils.GameUtils.Status;
 
 public class TpCommand implements CommandExecutor, TabCompleter {
 
@@ -34,9 +36,54 @@ public class TpCommand implements CommandExecutor, TabCompleter {
 			
 		}
 		
+		if (sender.hasPermission("uhc.spectate.all") && args.length > 2) {
+			
+			int x = 0;
+			int y = 0;
+			int z = 0;
+			
+			try {
+				
+				x = Integer.parseInt(args[0]);
+				
+			} catch (Exception exception) {
+				
+				player.sendMessage(Main.PREFIX + "Usage: /tp <x> <y> <z>");
+				return true;
+				
+			}
+			
+			try {
+				
+				y = Integer.parseInt(args[1]);
+				
+			} catch (Exception exception) {
+				
+				player.sendMessage(Main.PREFIX + "Usage: /tp <x> <y> <z>");
+				return true;
+				
+			}
+
+			try {
+				
+				z = Integer.parseInt(args[2]);
+				
+			} catch (Exception exception) {
+				
+				player.sendMessage(Main.PREFIX + "Usage: /tp <x> <y> <z>");
+				return true;
+				
+			}
+			
+			player.teleport(new Location(player.getWorld(), y, z, x));
+			player.sendMessage(Main.PREFIX + "You were teleported to §6" + x + " " + y + " " + z + ".");
+			return true;
+			
+		}
+		
 		Player teleport = Bukkit.getPlayer(args[0]);
 		
-		if (teleport == null) {
+		if (teleport == null && (args.length < 2 || !args[0].equalsIgnoreCase("*") || !sender.hasPermission("uhc.spectate.all"))) {
 			
 			sender.sendMessage(Main.PREFIX + "The player '§6" + args[0] + "§7' is not online.");
 			return true;
@@ -50,6 +97,19 @@ public class TpCommand implements CommandExecutor, TabCompleter {
 			if (destination == null) {
 				
 				sender.sendMessage(Main.PREFIX + "The player '§6" + args[0] + "§7' is not online.");
+				return true;
+				
+			}
+			
+			if (args[0].equalsIgnoreCase("*")) {
+				
+				for (Player online : Bukkit.getOnlinePlayers()) {
+					
+					online.teleport(destination);
+					
+				}
+				
+				Bukkit.broadcastMessage(Main.PREFIX + "All players were teleported to the player '§6" + destination.getName() + "§7'.");
 				return true;
 				
 			}
@@ -81,21 +141,35 @@ public class TpCommand implements CommandExecutor, TabCompleter {
 		
 		if (args.length == 1) {
 
-			for (UUID player : GameUtils.getAlives()) {
+			if (GameUtils.getStatus() == Status.NONE || GameUtils.getStatus() == Status.READY) {
 				
-				if (Bukkit.getPlayer(player) == null) continue;
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					
+					UUID uuid = player.getUniqueId();
+					
+					complete.add(Bukkit.getPlayer(uuid).getName());
+					
+				}
 				
-				complete.add(Bukkit.getPlayer(player).getName());
+			} else {
+				
+				for (UUID player : GameUtils.getAlives()) {
+				
+					if (Bukkit.getPlayer(player) == null) continue;
+					
+					complete.add(Bukkit.getPlayer(player).getName());
+				
+				}
 				
 			}
 			
 		} else if (args.length == 2 && sender.hasPermission("uhc.spectate.all")) {
 
-			for (UUID player : GameUtils.getAlives()) {
+			for (Player player : Bukkit.getOnlinePlayers()) {
 				
-				if (Bukkit.getPlayer(player) == null) continue;
+				UUID uuid = player.getUniqueId();
 				
-				complete.add(Bukkit.getPlayer(player).getName());
+				complete.add(Bukkit.getPlayer(uuid).getName());
 				
 			}
 			

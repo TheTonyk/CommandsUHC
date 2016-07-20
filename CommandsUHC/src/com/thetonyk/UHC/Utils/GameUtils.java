@@ -48,6 +48,7 @@ public class GameUtils {
 	private static Boolean autoOpen = GameUtils.getAutoOpenSQL();
 	private static TimerTask timer = null;
 	private static BukkitTask openTask = null;
+	private static Map<String, Boolean> options = GameUtils.getOptionsSQL();
 	
 	public static String getServer() {
 
@@ -183,7 +184,7 @@ public class GameUtils {
 			
 		}
 		
-		return world.equalsIgnoreCase("null") ? null : world;
+		return world.length() < 1 ? null : world;
 		
 	}
 	
@@ -196,7 +197,7 @@ public class GameUtils {
 	
 	private static void setWorldSQL(String newWorld) {
 		
-		DatabaseUtils.sqlInsert("UPDATE uhc SET world = '" + (newWorld == null ? "null" : newWorld) + "' WHERE server = '" + GameUtils.getServer() + "';");
+		DatabaseUtils.sqlInsert("UPDATE uhc SET world = '" + (newWorld == null ? "" : newWorld) + "' WHERE server = '" + GameUtils.getServer() + "';");
 		
 	}
 	
@@ -743,13 +744,19 @@ public class GameUtils {
 			
 		}
 		
+		if (type.length() < 1) return null;
+		
 		TeamType teamType = null;
 		
 		try {
 			
 			teamType = TeamType.valueOf(type);
 			
-		} catch (Exception exception) {}
+		} catch (Exception exception) {
+			
+			Bukkit.getLogger().severe("[Game] Error to parse " + type + " as TeamType.");
+			
+		}
 	
 		return teamType;
 		
@@ -764,7 +771,7 @@ public class GameUtils {
 	
 	private static void setTeamTypeSQL(TeamType teamType) {
 		
-		DatabaseUtils.sqlInsert("UPDATE uhc SET teamType = '" + (teamType == null ? "null" : teamType.toString()) + "' WHERE server = '" + GameUtils.getServer() + "';");
+		DatabaseUtils.sqlInsert("UPDATE uhc SET teamType = '" + (teamType == null ? "" : teamType.toString()) + "' WHERE server = '" + GameUtils.getServer() + "';");
 		
 	}
 	
@@ -874,7 +881,7 @@ public class GameUtils {
 			
 		}
 		
-		return host.equalsIgnoreCase("null") ? null : UUID.fromString(host);
+		return host.length() < 1 ? null : UUID.fromString(host);
 		
 	}
 	
@@ -887,7 +894,7 @@ public class GameUtils {
 	
 	private static void setHostSQL(UUID host) {
 		
-		DatabaseUtils.sqlInsert("UPDATE uhc SET host = '" + (host == null ? "null" : host.toString()) + "' WHERE server = '" + GameUtils.getServer() + "';");
+		DatabaseUtils.sqlInsert("UPDATE uhc SET host = '" + (host == null ? "" : host.toString()) + "' WHERE server = '" + GameUtils.getServer() + "';");
 		
 	}
 	
@@ -931,6 +938,50 @@ public class GameUtils {
 		DatabaseUtils.sqlInsert("UPDATE uhc SET autoOpen = " + (autoOpen ? 1 : 0) + " WHERE server = '" + GameUtils.getServer() + "';");
 		
 	}
+	
+	public static Map<String, Boolean> getOptions() {
+		
+		return GameUtils.options != null ? GameUtils.options : GameUtils.getOptionsSQL();
+		
+	}
+	
+	private static Map<String, Boolean> getOptionsSQL() {
+		
+		String options = null;
+		
+		try {
+			
+			ResultSet req = DatabaseUtils.sqlQuery("SELECT options FROM uhc WHERE server = '" + GameUtils.getServer() + "';");
+			
+			if (req.next()) options = req.getString("options");
+			
+			req.close();
+			
+		} catch (SQLException exception) {
+			
+			Bukkit.getLogger().severe("[Game] Error to get options of the uhc on server" + GameUtils.getServer() + ".");
+			
+		}
+		
+		return options == "" ? new HashMap<String, Boolean>() : new Gson().fromJson(options, new TypeToken<Map<String, Boolean>>(){}.getType());
+		
+	}
+	
+	public static void setOptions(Map<String, Boolean> options) {
+		
+		GameUtils.options = options;
+		GameUtils.setOptionsSQL(options);
+		
+	}
+	
+	private static void setOptionsSQL(Map<String, Boolean> options) {
+		
+		Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+		
+		DatabaseUtils.sqlInsert("UPDATE uhc SET options = '" + gson.toJson(options) + "' WHERE server = '" + GameUtils.getServer() + "';");
+		
+	}
+	
 	
 	private static void resetKills() {
 		
@@ -1049,6 +1100,7 @@ public class GameUtils {
 		DisplayTimers.pvpTime = 900;
 		DisplayTimers.meetupTime = 3600;
 		DQLogout.reset();
+		if (GameUtils.timer != null) GameUtils.timer.cancel();
 		if (GameUtils.openTask != null) GameUtils.openTask.cancel();
 		
 		for (Player player : Bukkit.getOnlinePlayers()) {

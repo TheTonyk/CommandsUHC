@@ -25,6 +25,7 @@ public class WorldUtils {
 		Environment environment = Environment.NORMAL;
 		long seed = -89417720380802761l;
 		WorldType type = WorldType.NORMAL;
+		Boolean newStone = false;
 		
 		try {
 			
@@ -35,6 +36,7 @@ public class WorldUtils {
 			environment = Environment.valueOf(worldDB.getString("environment"));
 			seed = worldDB.getLong("seed");
 			type = WorldType.valueOf(worldDB.getString("type"));
+			newStone = worldDB.getBoolean("newStone");
 			
 			worldDB.close();
 			
@@ -48,7 +50,7 @@ public class WorldUtils {
 		WorldCreator worldCreator = new WorldCreator(world);
 		worldCreator.environment(environment);
 		worldCreator.generateStructures(true);
-		worldCreator.generatorSettings("{\"useMonuments\":false,\"graniteSize\":1,\"graniteCount\":0,\"graniteMinHeight\":0,\"graniteMaxHeight\":0,\"dioriteSize\":1,\"dioriteCount\":0,\"dioriteMinHeight\":0,\"dioriteMaxHeight\":0,\"andesiteSize\":1,\"andesiteCount\":0,\"andesiteMinHeight\":0,\"andesiteMaxHeight\":0}");
+		worldCreator.generatorSettings("{\"useMonuments\":false" + (!newStone ? ",\"graniteSize\":1,\"graniteCount\":0,\"graniteMinHeight\":0,\"graniteMaxHeight\":0,\"dioriteSize\":1,\"dioriteCount\":0,\"dioriteMinHeight\":0,\"dioriteMaxHeight\":0,\"andesiteSize\":1,\"andesiteCount\":0,\"andesiteMinHeight\":0,\"andesiteMaxHeight\":0" : "") + "}");
 		worldCreator.seed(seed);
 		worldCreator.type(type);
 		
@@ -145,13 +147,13 @@ public class WorldUtils {
 		
 	}
 	
-	public static World createWorld(String world, Environment environment, long seed, WorldType type, int size) {
+	public static World createWorld(String world, Environment environment, long seed, WorldType type, int size, Boolean newStone) {
 		
 		WorldCreator worldCreator = new WorldCreator(world);
 		
 		worldCreator.environment(environment);
 		worldCreator.generateStructures(true);
-		worldCreator.generatorSettings("{\"useMonuments\":false,\"graniteSize\":1,\"graniteCount\":0,\"graniteMinHeight\":0,\"graniteMaxHeight\":0,\"dioriteSize\":1,\"dioriteCount\":0,\"dioriteMinHeight\":0,\"dioriteMaxHeight\":0,\"andesiteSize\":1,\"andesiteCount\":0,\"andesiteMinHeight\":0,\"andesiteMaxHeight\":0}");
+		worldCreator.generatorSettings("{\"useMonuments\":false" + (!newStone ? ",\"graniteSize\":1,\"graniteCount\":0,\"graniteMinHeight\":0,\"graniteMaxHeight\":0,\"dioriteSize\":1,\"dioriteCount\":0,\"dioriteMinHeight\":0,\"dioriteMaxHeight\":0,\"andesiteSize\":1,\"andesiteCount\":0,\"andesiteMinHeight\":0,\"andesiteMaxHeight\":0" : "") + "}");
 		worldCreator.seed(seed);
 		worldCreator.type(type);
 		
@@ -170,7 +172,7 @@ public class WorldUtils {
 		newWorld.setSpawnFlags(false, false);
 		newWorld.save();
 		
-		DatabaseUtils.sqlInsert("INSERT INTO uhc_worlds (`name`, `environment`, `seed`, `type`, `size`, `pregenned`, `server`) VALUES ('" + world + "', '" + environment.name() + "', '" + seed + "', '" + type.name() + "', '" + size + "', 0, '" + GameUtils.getServer() + "');");
+		DatabaseUtils.sqlInsert("INSERT INTO uhc_worlds (`name`, `environment`, `seed`, `type`, `size`, `pregenned`, `server`, `newStone`) VALUES ('" + world + "', '" + environment.name() + "', '" + seed + "', '" + type.name() + "', '" + size + "', 0, '" + GameUtils.getServer() + "', " + (newStone ? "1" : "0") + ");");
 		worlds.put(world, size);
 		
 		return newWorld;

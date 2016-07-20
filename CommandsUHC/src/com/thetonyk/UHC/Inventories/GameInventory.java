@@ -9,6 +9,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -16,6 +17,8 @@ import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.WorldType;
+import org.bukkit.World.Environment;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,21 +27,24 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.github.paperspigot.Title;
 
 import com.thetonyk.UHC.Main;
 import com.thetonyk.UHC.Commands.HostCommand;
 import com.thetonyk.UHC.Features.DisplaySidebar;
 import com.thetonyk.UHC.Features.SpecInfo;
+import com.thetonyk.UHC.GUI.AnvilGUI;
 import com.thetonyk.UHC.GUI.NumberGUI;
 import com.thetonyk.UHC.GUI.NumberGUI.NumberCallback;
 import com.thetonyk.UHC.GUI.SignGUI;
+import com.thetonyk.UHC.GUI.AnvilGUI.AnvilCallback;
 import com.thetonyk.UHC.GUI.SignGUI.SignCallback;
 import com.thetonyk.UHC.Utils.GameUtils;
 import com.thetonyk.UHC.Utils.GameUtils.GameType;
 import com.thetonyk.UHC.Utils.GameUtils.TeamType;
 import com.thetonyk.UHC.Utils.ItemsUtils;
 import com.thetonyk.UHC.Utils.MatchesUtils;
+import com.thetonyk.UHC.Utils.WorldUtils;
 import com.thetonyk.UHC.Utils.MatchesUtils.Match;
 import com.thetonyk.UHC.Utils.MatchesUtils.MatchesCallback;
 
@@ -62,6 +68,12 @@ public class GameInventory implements Listener {
 	private URL twitter;
 	private URL reddit;
 	private Boolean autoOpen;
+	private int size;
+	private Boolean newStone;
+	private Boolean nether;
+	private Boolean end;
+	private long seed;
+	private String lastSeed;
 	
 	public GameInventory() {
 		
@@ -80,6 +92,12 @@ public class GameInventory implements Listener {
 		this.twitter = null;
 		this.reddit = null;
 		this.autoOpen = false;
+		this.size = 2000;
+		this.newStone = false;
+		this.nether = false;
+		this.end = false;
+		this.seed = 0;
+		this.lastSeed = null;
 		
 		update();
 		
@@ -276,6 +294,32 @@ public class GameInventory implements Listener {
 				}
 				
 				break;
+			case WORLD:
+				
+				ItemStack size = ItemsUtils.createItem(Material.MAP, "§8⫸ §7Size: §a" + this.size + "x" + this.size, 1, 0);
+				size = ItemsUtils.hideFlags(size);
+				ItemStack newStone = ItemsUtils.createItem(Material.STONE, "§8⫸ §7New 1.8 stones: " + (this.newStone ? "§aEnabled" : "§cDisabled"), 1, 1);
+				ItemStack nether = ItemsUtils.createItem(Material.NETHERRACK, "§8⫸ §7Nether: " + (this.nether ? "§aEnabled" : "§cDisabled"), 1, 0);
+				ItemStack end = ItemsUtils.createItem(Material.ENDER_STONE, "§8⫸ §7The End: " + (this.end ? "§aEnabled" : "§cDisabled"), 1, 0);
+				
+				if (this.seed == 0 && this.lastSeed != null) {
+					
+					lore.add(" ");
+					lore.add("§8⫸ §7Last entered seed: §c" + this.lastSeed);
+					lore.add("§8⫸ §7This seed is incorrect.");
+					lore.add(" ");
+					
+				}
+				
+				ItemStack seed = ItemsUtils.createItem(Material.GRASS, "§8⫸ §7Seed: §a" + (this.seed == 0 ? "§cRandom" : this.seed), 1, 0, lore);
+				lore.clear();
+				
+				this.inventory.setItem(11, size);
+				this.inventory.setItem(12, newStone);
+				this.inventory.setItem(13, nether);
+				this.inventory.setItem(14, end);
+				this.inventory.setItem(15, seed);
+				break;
 			
 		}
 		
@@ -468,15 +512,7 @@ public class GameInventory implements Listener {
 						@Override
 						public void onConfirm(String[] lines) {
 							
-							new BukkitRunnable() {
-								
-								public void run() {
-									
-									player.openInventory(getInventory());
-								
-								}
-								
-							}.runTaskLater(Main.uhc, 1);
+							player.openInventory(inventory);
 							
 							if (lines[0].length() + lines[1].length() + lines[2].length() + lines[3].length() < 1) return;
 							
@@ -592,6 +628,105 @@ public class GameInventory implements Listener {
 					this.teamType = type;
 					update();
 					return;
+					
+				}
+				
+				break;
+			case WORLD:
+				
+				if (item.getItemMeta().getDisplayName().startsWith("§8⫸ §7Size: §a")) {
+					
+					NumberGUI gui = new NumberGUI("Size", this.size, 1000, 100, 2000, 10000, 100, new NumberCallback<Integer>() {
+
+						@Override
+						public void onConfirm(int newSize) {
+							
+							player.openInventory(inventory);
+							size = newSize;
+							update();
+							
+						}
+
+						@Override
+						public void onCancel() {
+							
+							player.openInventory(inventory);
+							
+						}
+
+						@Override
+						public void onDisconnect() {}
+						
+					});
+					
+					player.openInventory(gui.getInventory());
+					
+				}
+				
+				if (item.getItemMeta().getDisplayName().startsWith("§8⫸ §7New 1.8 stones: ")) {
+					
+					this.newStone = !this.newStone;
+					update();
+					return;
+					
+				}
+				
+				if (item.getItemMeta().getDisplayName().startsWith("§8⫸ §7Nether: ")) {
+					
+					this.nether = !this.nether;
+					update();
+					return;
+					
+				}
+				
+				if (item.getItemMeta().getDisplayName().startsWith("§8⫸ §7The End: ")) {
+					
+					this.end = !this.end;
+					update();
+					return;
+					
+				}
+				
+				if (item.getItemMeta().getDisplayName().startsWith("§8⫸ §7Seed: §a")) {
+					
+					new AnvilGUI(player, this.seed == 0 && this.lastSeed == null ? "Seed..." : this.seed == 0 ? this.lastSeed : String.valueOf(this.seed), new AnvilCallback<String>(){
+
+						@Override
+						public void onConfirm(String text) {
+							
+							player.openInventory(inventory);
+							
+							if (text.length() < 1) return;
+							
+							long longSeed = 0;
+							
+							try {
+								
+								longSeed = Long.parseLong(text);
+								
+							} catch (Exception exception) {
+								
+								lastSeed = text;
+								seed = 0;
+								update();
+								return;
+								
+							}
+							
+							seed = longSeed;
+							lastSeed = null;
+							update();
+							
+						}
+
+						@Override
+						public void onClose() {
+							
+							player.openInventory(inventory);
+							
+						}
+						
+					});
 					
 				}
 				
@@ -736,6 +871,49 @@ public class GameInventory implements Listener {
 				
 			}
 			
+			if (this.seed == 0) this.seed = new Random().nextLong();
+			
+			Title title = new Title("§cWorld Creation", "§7The server is currently freezed", 0, 1200, 0);
+			
+			for (Player online : Bukkit.getOnlinePlayers()) {
+				
+				online.sendTitle(title);
+				
+			}
+			
+			String name = player.getName().toLowerCase();
+			int i = 0;
+			
+			while (WorldUtils.exist(name)) {
+				
+				if (i > 1000) break;
+				
+				if (i == 0) {
+					
+					name += String.valueOf(i);
+					i++;
+					
+				}
+				
+				name = name.substring(0, name.length() - 2) + String.valueOf(i);
+				
+			}
+
+			WorldUtils.createWorld(name, Environment.NORMAL, this.seed, WorldType.NORMAL, this.size, this.newStone);
+			
+			if (this.nether) WorldUtils.createWorld(name + "_nether", Environment.NETHER, this.seed, WorldType.NORMAL, this.size, this.newStone);	
+			
+			if (this.end) WorldUtils.createWorld(name + "_end", Environment.THE_END, this.seed, WorldType.NORMAL, this.size, this.newStone);
+			
+			Bukkit.broadcastMessage(Main.PREFIX + "The game world has been created.");
+			
+			for (Player online : Bukkit.getOnlinePlayers()) {
+				
+				online.hideTitle();
+				
+			}
+			
+			GameUtils.setWorld(name);
 			return;
 			
 		}
@@ -846,7 +1024,7 @@ public class GameInventory implements Listener {
 	
 	private enum Page {
 		
-		BASIC("Config", 27, null), TEAMS("Teams", 54, Page.BASIC);
+		BASIC("Config", 27, null), TEAMS("Teams", 54, Page.BASIC), WORLD("World", 27, null);
 		
 		private static Page[] values = values();
 		private String name;

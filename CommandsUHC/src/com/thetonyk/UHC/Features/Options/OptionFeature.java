@@ -3,7 +3,9 @@ package com.thetonyk.UHC.Features.Options;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -13,10 +15,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.thetonyk.UHC.Main;
+import com.thetonyk.UHC.Utils.GameUtils;
 
 public class OptionFeature {
 	
-	private static List<Option> options = new ArrayList<Option>();
+	private static Map<String, Option> options = new HashMap<String, Option>();
 	
 	public static void setup() {
 		
@@ -57,7 +60,7 @@ public class OptionFeature {
 				
 				Option option = (Option) instance;
 				
-				options.add(option);
+				OptionFeature.options.put(option.getId(), option);
 				
 				if (option.isEnabled()) option.onEnable();
 				else option.onDisable();
@@ -66,9 +69,19 @@ public class OptionFeature {
 			 
 		}
 		
+		for (Map.Entry<String, Boolean> id : GameUtils.getOptions().entrySet()) {
+			
+			Option option = OptionFeature.options.get(id.getKey());
+			
+			if (option.isEnabled() == id.getValue()) continue;
+			
+			option.toggle();
+			
+		}
+		
 	}
 	
-	public static List<Option> getFeatures() {
+	public static Map<String, Option> getFeatures() {
 		
 		return options;
 		
@@ -111,9 +124,15 @@ public class OptionFeature {
 			
 		}
 		
+		public String getName() {
+			
+			return this.name;
+			
+		}
+		
 		public ItemStack getIcon() {
 			
-			ItemStack item = icon.clone();
+			ItemStack item = this.icon.clone();
 			ItemMeta meta = item.getItemMeta();
 			meta.setDisplayName("§8⫸ §6" + name + " §8⫷");
 			item.setItemMeta(meta);
@@ -154,6 +173,12 @@ public class OptionFeature {
 		
 		public void onEnable() {};
 		public void onDisable() {};
+		
+		public String getId() {
+			
+			return this.getName().replaceAll(" ", "_").toLowerCase();
+			
+		}
 		
 	}
 
