@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
 
 public class WorldUtils {
 	
-	private static Map<String, Integer> worlds = new HashMap<String, Integer>();
+	private static Map<String, Integer> worlds = new HashMap<>();
 
 	public static void loadWorld(String world) {
 		
@@ -31,12 +31,14 @@ public class WorldUtils {
 			
 			ResultSet worldDB = DatabaseUtils.sqlQuery("SELECT * FROM uhc_worlds WHERE name = '" + world + "' AND server = '" + GameUtils.getServer() + "';");
 			
-			worldDB.next();
-			
-			environment = Environment.valueOf(worldDB.getString("environment"));
-			seed = worldDB.getLong("seed");
-			type = WorldType.valueOf(worldDB.getString("type"));
-			newStone = worldDB.getBoolean("newStone");
+			if (worldDB.next()) {
+
+				environment = Environment.valueOf(worldDB.getString("environment"));
+				seed = worldDB.getLong("seed");
+				type = WorldType.valueOf(worldDB.getString("type"));
+				newStone = worldDB.getBoolean("newStone");
+
+			}
 			
 			worldDB.close();
 			
